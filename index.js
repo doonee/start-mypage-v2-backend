@@ -92,6 +92,23 @@ app.post('/post/edit', (req, res) => {
   })
 })
 
+app.delete('/post/delete', (req, res) => {
+  const params = req.body;
+  const postNum = parseInt(params.postNum)
+  if (!postNum || postNum === 0) {
+    console.log(`postNum 부재 => `, postNum)
+    res.send('error');
+  }
+  posts.deleteOne({ _id: postNum })
+    .then(() => {
+      res.send('ok')
+    })
+    .catch((err) => {
+      console.log("🚀 ~ file: index.js:107 ~ app.delete ~ err", err)
+      res.send('error')
+    })
+})
+
 app.get('/calculator', (req, res) => {
   const params = req.query;
   const result = Number(params.num1) + Number(params.num2); // 3
