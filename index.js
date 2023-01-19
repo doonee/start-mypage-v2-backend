@@ -39,14 +39,17 @@ app.get('/', (req, res) => {
     })
 })
 
-app.get('/postAdd', async (req, res) => {
+app.post('/post/add', async (req, res) => {
   try {
+    const params = req.body
+    title = params.title
+    content = params.content
     // 변수명을 전역변수와 같은 counter로 하면 에러 발생.
-    const cnt = await counter.findOne({ name: 'counter' });
+    const cnt = await counter.findOne({ name: 'counter' })
     await posts.insertOne({
       _id: cnt.postNum,
-      title: '제목 테스트 입니다. 55',
-      content: '내용 테스트 55',
+      title,
+      content,
       regdate: new Date(),
     })
     await counter.findOneAndUpdate({
