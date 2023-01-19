@@ -19,7 +19,6 @@ moment.locale('ko')
 // 몽구스
 const { Post } = require("./Model/post.js");
 const { Counter2 } = require("./Model/counter2.js");
-const { User } = require("./Model/user.js");
 
 // post로 보내는 값 받는 옵션
 app.use(express.urlencoded({ extended: true }))
@@ -47,19 +46,6 @@ app.get('/', (req, res) => {
 
 app.get('/counter2', (req, res) => {
   Counter2.find()
-    // .exec()
-    .then((data) => {
-      console.log(data)
-      res.send(data)
-    })
-    .catch((err) => {
-      console.log(err);
-      res.send(err)
-    });
-})
-
-app.get('/users', (req, res) => {
-  User.find()
     // .exec()
     .then((data) => {
       console.log(data)
