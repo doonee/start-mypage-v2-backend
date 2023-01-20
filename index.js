@@ -1,29 +1,19 @@
 const express = require('express')
 const app = express()
-const port = 5000
 require('dotenv').config()
+const port = process.env.REACT_APP_PORT
+
+// // post로 보내는 값 받는 옵션
+// const { urlencoded } = require('express')
+// var bodyParser = require('body-parser')
 
 // post로 보내는 값 받는 옵션
-const { urlencoded } = require('express')
-var bodyParser = require('body-parser')
+app.use(express.urlencoded({ extended: true }));
+app.use(express.json()) // To parse the incoming requests with JSON payloads
 
-const mongoose = require('mongoose')
-mongoose.set('strictQuery', true) // 없으면 경고 발생함!
-
+// moment
 const moment = require('moment')
 moment.locale('ko')
-
-// 몽고디비 collections
-// var db, counter2, posts, users;
-//var db, posts, users;
-// 몽구스
-const { Post } = require("./Model/post.js");
-const { Counter2 } = require("./Model/counter2.js");
-const { User } = require("./Model/user.js");
-
-// post로 보내는 값 받는 옵션
-app.use(express.urlencoded({ extended: true }))
-app.use(bodyParser.json());
 
 // locals 설정
 app.use((req, res, next) => {
@@ -32,43 +22,70 @@ app.use((req, res, next) => {
   next()
 })
 
-app.get('/', (req, res) => {
-  Post.find()
-    .exec()
-    .then((postData) => {
-      console.log("🚀 ~ file: index.js:38 ~ .then ~ postData", postData)
-      res.send(postData)
-    })
-    .catch((err) => {
-      console.log(err);
-      res.send(err)
-    });
-})
+// mongoose 모델
+const { Users } = require("./Model/usersModel");
+const { Board } = require("./Model/boardModel");
 
-app.get('/counter2', (req, res) => {
-  Counter2.find()
-    // .exec()
-    .then((data) => {
-      console.log(data)
-      res.send(data)
-    })
-    .catch((err) => {
-      console.log(err);
-      res.send(err)
-    });
-})
-
+// routers
 app.get('/users', (req, res) => {
-  User.find()
-    // .exec()
+  Users.find().sort({ idx: -1 }) // -1 = desc
     .then((data) => {
-      console.log(data)
       res.send(data)
     })
     .catch((err) => {
       console.log(err);
-      res.send(err)
+      res.send('error')
     });
+})
+
+app.get('/board', (req, res) => {
+  Board.find().sort({ idx: -1 })
+    .then((data) => {
+      res.send(data)
+    })
+    .catch((err) => {
+      console.log(err);
+      res.send('error')
+    });
+})
+
+app.post('/user/add', async (req, res) => {
+  const params = req.body;
+  const topRow = await Users.findOne().sort({ idx: -1 })
+  let idx = 1;
+  if (topRow && topRow.idx) idx = parseInt(topRow.idx) + 1
+  await Users.collection.insertOne({
+    idx,
+    userId: params.userId,
+    userPass: params.userPass,
+    createdAt: params.createdAt
+  })
+    .then(() => {
+      res.send('ok')
+    })
+    .catch((err) => {
+      console.log(err);
+      res.send('error');
+    });
+})
+
+app.post('/board/add', async (req, res) => {
+  const params = req.body;
+  const topRow = await Board.findOne().sort({ idx: -1 })
+  let idx = 1;
+  if (topRow && topRow.idx) idx = parseInt(topRow.idx) + 1
+  await Board.collection.insertOne({
+    idx,
+    title: params.title,
+    content: params.content,
+    writer: params.writer,
+    createdAt: params.createdAt
+  }).then(() => {
+    res.send('ok')
+  }).catch((err) => {
+    console.error(err);
+    res.send('error');
+  });
 })
 
 app.post('/post/add', (req, res) => {
@@ -80,33 +97,15 @@ app.post('/post/add', (req, res) => {
   Counter2.findOne({ name: "counter2" })
     .exec()
     .then((counterInfo) => {
-      console.log("🚀 ~ file: index.js:61 ~ .then ~ counterInfo", counterInfo)
-      // temp.postNum = counterInfo.postNum;
-      // const NewPost = new Post(temp);
-      // NewPost.save().then(() => {
-      //   Counter2.findOneAndUpdate(
-      //     { name: "counter2" },
-      //     {
-      //       $inc: { postNum: 1 },
-      //     }
-      //   )
-      //     .exec()
-      //     .then(() => {
-      //       res.redirect("/");
-      //     });
-      // });
     })
     .catch((err) => {
       console.log(err);
       res.status(400).send("게시글 저장 실패");
     });
-  console.log("🚀 ~ file: index.js:89 ~ app.post ~ Counter2", Counter2)
-  console.log("🚀 ~ file: index.js:89 ~ app.post ~ Counter2", Counter2)
-  console.log("🚀 ~ file: index.js:89 ~ app.post ~ Counter2", Counter2)
 })
 
-app.get('/post/:postNum', (req, res) => {
-  Post.findOne({ postNum: parseInt(req.params.postNum) })
+app.get('/post/:postNum', async (req, res) => {
+  await Post.findOne({ postNum: parseInt(req.params.postNum) }).exec()
     .then(detail => {
       // res.locals.moment = moment 설정으로 인해 생략하고 프론트에서 아래와 똑같이 설정 가능
       // detail.regdate = moment(detail.regdate).format('LLLL') // ex) 2023년 1월 19일 목요일 오전 11:39
@@ -153,7 +152,6 @@ app.delete('/post/delete', (req, res) => {
 app.get('/calculator', (req, res) => {
   const params = req.query;
   const result = Number(params.num1) + Number(params.num2); // 3
-  //res.send(`계산 결과 => ${result}`)
   res.send(String(result))
 })
 
@@ -168,41 +166,15 @@ app.all('*', (req, res) => {
   res.status(404).send('<h1 style="margin-top: 200px; text-align:center;">Not Found!</h1>')
 })
 
-const mdbId = process.env.REACT_APP_MONGODB_ID;
-const mdbPass = process.env.REACT_APP_MONGODB_PASS;
-const uri = `mongodb+srv://${mdbId}:${mdbPass}@cluster0.yq1rq.mongodb.net/?retryWrites=true&w=majority`;
-// const { MongoClient, ServerApiVersion } = require('mongodb-legacy');
-// const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true, serverApi: ServerApiVersion.v1 });
-// client.connect(err => {
-//   if (err) {
-//     client.close();
-//     console.log("🚀 ~ file: index.js:34 ~ err", err)
-//     return
-//   } else {
-//     console.log("MongoDB connected.")
-//     app.listen(port, () => {
-//       console.log(`app listening on port ${port}`)
-//     })
-//     db = client.db("Express");
-//     counter2 = db.collection("counter2");
-//     posts = db.collection("posts");
-//     users = db.collection("users");
-//   }
-// });
-
-
-// // CONNECT TO MONGODB SERVER
 // mongoose
-//   //.connect(uri, { useNewUrlParser: true, useUnifiedTopology: true })
-//   .connect(uri)
-//   .then(() => console.log('Successfully connected to mongodb'))
-//   .catch(e => console.error(e));
-
-// app.listen(port, () => console.log(`Server listening on port ${port}`));
-
-
-
+const mongoose = require('mongoose')
+const dbId = encodeURIComponent(process.env.REACT_APP_MONGODB_ID)
+const dbPass = encodeURIComponent(process.env.REACT_APP_MONGODB_PASS)
+const db = encodeURIComponent(process.env.REACT_APP_MONGODB)
+const options = 'retryWrites=true&w=majority'
+const uri = `mongodb+srv://${dbId}:${dbPass}@cluster0.yq1rq.mongodb.net/${db}?${options}`;
 mongoose
+  .set('strictQuery', true) // 없으면 경고 발생함!
   .connect(uri)
   .then(() => {
     console.log("Connecting MongoDB...");
