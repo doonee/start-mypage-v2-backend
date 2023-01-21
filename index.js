@@ -28,8 +28,8 @@ const { Board } = require("./Model/boardModel");
 
 // routers
 app.get('/', (req, res) => {
-  const dbId = encodeURIComponent(process.env.REACT_APP_MONGODB_ID)
-  const dbPass = encodeURIComponent(process.env.REACT_APP_MONGODB_PASS)
+  const dbId = process.env.REACT_APP_MONGODB_ID
+  const dbPass = process.env.REACT_APP_MONGODB_PASS
   const db = encodeURIComponent(process.env.REACT_APP_MONGODB)
   const options = 'retryWrites=true&w=majority'
   const uri = `mongodb+srv://${dbId}:${dbPass}@cluster0.yq1rq.mongodb.net/${db}?${options}`;
