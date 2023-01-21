@@ -28,24 +28,18 @@ const { Board } = require("./Model/boardModel");
 
 // routers
 app.get('/', (req, res) => {
-  // const dbId = process.env.REACT_APP_MONGODB_ID
-  // const dbPass = process.env.REACT_APP_MONGODB_PASS
-  // const db = encodeURIComponent(process.env.REACT_APP_MONGODB)
-  // const options = 'retryWrites=true&w=majority'
-  // const uri = `mongodb+srv://${dbId}:${dbPass}@cluster0.yq1rq.mongodb.net/${db}?${options}`;
-  res.send(process.env.MONGODB_URI)
+  res.send('Hello, vercel.')
 })
 
 app.get('/users', (req, res) => {
-  // Users.find().sort({ idx: -1 }) // -1 = desc
-  //   .then((data) => {
-  //     res.send(data)
-  //   })
-  //   .catch((err) => {
-  //     console.log(err);
-  //     res.send('error')
-  //   });
-  res.send(port)
+  Users.find().sort({ idx: -1 }) // -1 = desc
+    .then((data) => {
+      res.send(data)
+    })
+    .catch((err) => {
+      console.log(err);
+      res.send('error')
+    });
 })
 
 // app.get('/board', (req, res) => {
