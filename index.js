@@ -1,7 +1,10 @@
 const express = require('express')
 const app = express()
+var cors = require('cors')
 require('dotenv').config()
 const port = process.env.REACT_APP_PORT
+
+app.use(cors())
 
 // // post로 보내는 값 받는 옵션
 // const { urlencoded } = require('express')
