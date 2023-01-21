@@ -171,28 +171,26 @@ app.get('/users', (req, res) => {
 //   res.status(404).send('<h1 style="margin-top: 200px; text-align:center;">Not Found!</h1>')
 // })
 
-// // mongoose
-// const mongoose = require('mongoose')
-// const dbId = encodeURIComponent(process.env.REACT_APP_MONGODB_ID)
-// const dbPass = encodeURIComponent(process.env.REACT_APP_MONGODB_PASS)
-// const db = encodeURIComponent(process.env.REACT_APP_MONGODB)
-// const options = 'retryWrites=true&w=majority'
-// const uri = `mongodb+srv://${dbId}:${dbPass}@cluster0.yq1rq.mongodb.net/${db}?${options}`;
 // mongoose
-//   .set('strictQuery', true) // 없으면 경고 발생함!
-//   .connect(uri)
-//   .then(() => {
-//     console.log("Connecting MongoDB...");
-//     app.listen(port, () => {
-//       console.log(`Example app listening on port ${port}`);
-//     });
-//   })
-//   .catch((err) => {
-//     console.log(err);
-//   });
+const mongoose = require('mongoose')
+const dbId = encodeURIComponent(process.env.REACT_APP_MONGODB_ID)
+const dbPass = encodeURIComponent(process.env.REACT_APP_MONGODB_PASS)
+const db = encodeURIComponent(process.env.REACT_APP_MONGODB)
+const options = 'retryWrites=true&w=majority'
+const uri = `mongodb+srv://${dbId}:${dbPass}@cluster0.yq1rq.mongodb.net/${db}?${options}`;
+mongoose
+  .set('strictQuery', true) // 없으면 경고 발생함!
+  .connect(uri)
+  .then(() => {
+    console.log("Connecting MongoDB...");
+    app.listen(port, () => {
+      console.log(`Example app listening on port ${port}`);
+    });
+  })
+  .catch((err) => {
+    console.log(err);
+  });
 
-
-
-app.listen(5000, () => {
-  console.log(`Example app listening on port 5000`);
-});
+// app.listen(5000, () => {
+//   console.log(`Example app listening on port 5000`);
+// });
