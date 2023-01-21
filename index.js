@@ -28,7 +28,9 @@ const { Board } = require("./Model/boardModel");
 
 // routers
 app.get('/', (req, res) => {
-  res.send('Hello, vercel.')
+  const params = req.query;
+  const result = Number(params.num1) + Number(params.num2); // 3
+  res.send(String(result))
 })
 
 app.get('/users', (req, res) => {
@@ -42,55 +44,55 @@ app.get('/users', (req, res) => {
     });
 })
 
-// app.get('/board', (req, res) => {
-//   Board.find().sort({ idx: -1 })
-//     .then((data) => {
-//       res.send(data)
-//     })
-//     .catch((err) => {
-//       console.log(err);
-//       res.send('error')
-//     });
-// })
+app.get('/board', (req, res) => {
+  Board.find().sort({ idx: -1 })
+    .then((data) => {
+      res.send(data)
+    })
+    .catch((err) => {
+      console.log(err);
+      res.send('error')
+    });
+})
 
-// app.post('/user/add', async (req, res) => {
-//   const params = req.body;
-//   const topRow = await Users.findOne().sort({ idx: -1 })
-//   let idx = 1;
-//   if (topRow && topRow.idx) idx = parseInt(topRow.idx) + 1
-//   await Users.collection.insertOne({
-//     idx,
-//     userId: params.userId,
-//     userPass: params.userPass,
-//     createdAt: params.createdAt
-//   })
-//     .then(() => {
-//       res.send('ok')
-//     })
-//     .catch((err) => {
-//       console.log(err);
-//       res.send('error');
-//     });
-// })
+app.post('/user/add', async (req, res) => {
+  const params = req.body;
+  const topRow = await Users.findOne().sort({ idx: -1 })
+  let idx = 1;
+  if (topRow && topRow.idx) idx = parseInt(topRow.idx) + 1
+  await Users.collection.insertOne({
+    idx,
+    userId: params.userId,
+    userPass: params.userPass,
+    createdAt: params.createdAt
+  })
+    .then(() => {
+      res.send('ok')
+    })
+    .catch((err) => {
+      console.log(err);
+      res.send('error');
+    });
+})
 
-// app.post('/board/add', async (req, res) => {
-//   const params = req.body;
-//   const topRow = await Board.findOne().sort({ idx: -1 })
-//   let idx = 1;
-//   if (topRow && topRow.idx) idx = parseInt(topRow.idx) + 1
-//   await Board.collection.insertOne({
-//     idx,
-//     title: params.title,
-//     content: params.content,
-//     writer: params.writer,
-//     createdAt: params.createdAt
-//   }).then(() => {
-//     res.send('ok')
-//   }).catch((err) => {
-//     console.error(err);
-//     res.send('error');
-//   });
-// })
+app.post('/board/add', async (req, res) => {
+  const params = req.body;
+  const topRow = await Board.findOne().sort({ idx: -1 })
+  let idx = 1;
+  if (topRow && topRow.idx) idx = parseInt(topRow.idx) + 1
+  await Board.collection.insertOne({
+    idx,
+    title: params.title,
+    content: params.content,
+    writer: params.writer,
+    createdAt: params.createdAt
+  }).then(() => {
+    res.send('ok')
+  }).catch((err) => {
+    console.error(err);
+    res.send('error');
+  });
+})
 
 // app.post('/post/add', (req, res) => {
 //   let temp = {
@@ -165,19 +167,14 @@ app.get('/users', (req, res) => {
 //   res.send(String(result))
 // })
 
-// // 404 Not Found : 라우트 가장 아래에 위치
-// app.all('*', (req, res) => {
-//   res.status(404).send('<h1 style="margin-top: 200px; text-align:center;">Not Found!</h1>')
-// })
+// 404 Not Found : 라우트 가장 아래에 위치
+app.all('*', (req, res) => {
+  res.status(404).send('<h1 style="margin-top: 200px; text-align:center;">Not Found!</h1>')
+})
 
 // mongoose
 if (!process.env.MONGODB_URI) throw new Error('db connection error...')
 const mongoose = require('mongoose')
-// const dbId = encodeURIComponent(process.env.REACT_APP_MONGODB_ID)
-// const dbPass = encodeURIComponent(process.env.REACT_APP_MONGODB_PASS)
-// const db = encodeURIComponent(process.env.REACT_APP_MONGODB)
-// const options = 'retryWrites=true&w=majority'
-// const uri = `mongodb+srv://${dbId}:${dbPass}@cluster0.yq1rq.mongodb.net/${db}?${options}`;
 mongoose
   .set('strictQuery', true) // 없으면 경고 발생함!
   .connect(process.env.MONGODB_URI)
@@ -190,7 +187,3 @@ mongoose
   .catch((err) => {
     console.log(err);
   });
-
-// app.listen(5000, () => {
-//   console.log(`Example app listening on port 5000`);
-// });
