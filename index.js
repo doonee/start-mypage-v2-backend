@@ -40,7 +40,7 @@ app.get('/users', (req, res) => {
   //     console.log(err);
   //     res.send('error')
   //   });
-  res.send('/user page')
+  res.send(port)
 })
 
 // app.get('/board', (req, res) => {
