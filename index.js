@@ -14,20 +14,20 @@ app.use(cors())
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json()) // To parse the incoming requests with JSON payloads
 
-// moment
-const moment = require('moment')
-moment.locale('ko')
+// // moment
+// const moment = require('moment')
+// moment.locale('ko')
 
-// locals 설정
-app.use((req, res, next) => {
-  // moment : 클라이언트에서 별도의 설정 없이 moment 문법을 그대로 활용할 수 있다. 
-  res.locals.moment = moment
-  next()
-})
+// // locals 설정
+// app.use((req, res, next) => {
+//   // moment : 클라이언트에서 별도의 설정 없이 moment 문법을 그대로 활용할 수 있다. 
+//   res.locals.moment = moment
+//   next()
+// })
 
 // mongoose 모델
-const { Users } = require("./Model/usersModel");
 const { Board } = require("./Model/boardModel");
+const { Users } = require("./Model/usersModel");
 
 // routers
 app.get('/', (req, res) => {
@@ -49,11 +49,9 @@ app.get('/users', (req, res) => {
 
 app.get('/board', (req, res) => {
   Board.find().sort({ idx: -1 })
-    .then((data) => {
-      res.send(data)
-    })
+    .then(data => res.send(data))
     .catch((err) => {
-      console.log(err);
+      console.error(err);
       res.send('error')
     });
 })
@@ -61,8 +59,7 @@ app.get('/board', (req, res) => {
 app.post('/user/add', async (req, res) => {
   const params = req.body;
   const topRow = await Users.findOne().sort({ idx: -1 })
-  let idx = 1;
-  if (topRow && topRow.idx) idx = parseInt(topRow.idx) + 1
+  const idx = (topRow && topRow.idx) ? parseInt(topRow.idx) + 1 : 1
   await Users.collection.insertOne({
     idx,
     userId: params.userId,
@@ -81,8 +78,7 @@ app.post('/user/add', async (req, res) => {
 app.post('/board/add', async (req, res) => {
   const params = req.body;
   const topRow = await Board.findOne().sort({ idx: -1 })
-  let idx = 1;
-  if (topRow && topRow.idx) idx = parseInt(topRow.idx) + 1
+  const idx = (topRow && topRow.idx) ? parseInt(topRow.idx) + 1 : 1
   await Board.collection.insertOne({
     idx,
     title: params.title,
@@ -97,82 +93,82 @@ app.post('/board/add', async (req, res) => {
   });
 })
 
-// app.post('/post/add', (req, res) => {
-//   let temp = {
-//     title: req.body.title,
-//     content: req.body.content,
-//   };
-//   console.log('Counter2 => ', Counter2)
-//   Counter2.findOne({ name: "counter2" })
-//     .exec()
-//     .then((counterInfo) => {
-//     })
-//     .catch((err) => {
-//       console.log(err);
-//       res.status(400).send("게시글 저장 실패");
-//     });
-// })
+app.get('/board/:id', (req, res) => {
+  const { id } = req.params;
+  Board.findOne({ _id: id })
+    .then(data => res.send(data))
+    .catch(err => {
+      console.error(err)
+      res.send('error')
+    })
+})
 
-// app.get('/post/:postNum', async (req, res) => {
-//   await Post.findOne({ postNum: parseInt(req.params.postNum) }).exec()
-//     .then(detail => {
-//       // res.locals.moment = moment 설정으로 인해 생략하고 프론트에서 아래와 똑같이 설정 가능
-//       // detail.regdate = moment(detail.regdate).format('LLLL') // ex) 2023년 1월 19일 목요일 오전 11:39
-//       res.send(detail)
-//     })
-//     .catch(err => {
-//       console.error(err)
-//       res.send('error')
-//     })
-// })
+app.get('/users/:id', (req, res) => {
+  const { id } = req.params;
+  Users.findOne({ _id: id })
+    .then(data => res.send(data))
+    .catch(err => {
+      console.error(err)
+      res.send('error')
+    })
+})
 
-// app.post('/post/edit', (req, res) => {
-//   console.log("req.body => ", req.body)
-//   const params = req.body;
-//   posts.findOneAndUpdate({ _id: parseInt(params._id) }, {
-//     $set: {
-//       title: params.title,
-//       content: params.content
-//     }
-//   }).then(() => {
-//     res.send('ok')
-//   }).catch(err => {
-//     console.log('catch => ', err)
-//   })
-// })
+app.put('/board/edit', (req, res) => {
+  const { id, title, content } = req.body;
+  Board.findOneAndUpdate({ _id: id }, {
+    $set: {
+      title,
+      content
+    }
+  }).then(() => {
+    res.send('ok')
+  }).catch(err => {
+    console.error(err)
+    res.send('error')
+  })
+})
 
-// app.delete('/post/delete', (req, res) => {
-//   const params = req.body;
-//   const postNum = parseInt(params.postNum)
-//   if (!postNum || postNum === 0) {
-//     console.log(`postNum 부재 => `, postNum)
-//     res.send('error');
-//   }
-//   posts.deleteOne({ _id: postNum })
-//     .then(() => {
-//       res.send('ok')
-//     })
-//     .catch((err) => {
-//       console.log("🚀 ~ file: index.js:107 ~ app.delete ~ err", err)
-//       res.send('error')
-//     })
-// })
+app.put('/users/edit', (req, res) => {
+  const { id, userPass } = req.body;
+  Users.findOneAndUpdate({ _id: id }, {
+    $set: {
+      userPass
+    }
+  }).then(() => {
+    res.send('ok')
+  }).catch(err => {
+    console.error(err)
+    res.send('error')
+  })
+})
 
-// app.get('/calculator', (req, res) => {
-//   const params = req.query;
-//   const result = Number(params.num1) + Number(params.num2); // 3
-//   res.send(String(result))
-// })
+app.delete('/board/delete', (req, res) => {
+  const { id } = req.body;
+  Board.deleteOne({ _id: id })
+    .then(() => {
+      res.send('ok')
+    })
+    .catch((err) => {
+      console.err(err)
+      res.send('error')
+    })
+})
 
-// app.post('/calculator', (req, res) => {
-//   const params = req.body; // { num1: '899', num2: '454' }
-//   const result = Number(params.num1) + Number(params.num2); // 1353
-//   res.send(String(result))
-// })
+app.delete('/users/delete', (req, res) => {
+  const { id } = req.body;
+  Users.deleteOne({ _id: id })
+    .then(() => {
+      res.send('ok')
+    })
+    .catch((err) => {
+      console.err(err)
+      res.send('error')
+    })
+})
 
 // 404 Not Found : 라우트 가장 아래에 위치
 app.all('*', (req, res) => {
-  res.status(404).send('<h1 style="margin-top: 200px; text-align:center;">Not Found!</h1>')
+  res.status(404).send('Not Found!')
 })
 
 // mongoose
