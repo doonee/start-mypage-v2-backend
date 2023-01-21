@@ -31,16 +31,17 @@ app.get('/', (req, res) => {
   res.send('Hello, World!')
 })
 
-// app.get('/users', (req, res) => {
-//   Users.find().sort({ idx: -1 }) // -1 = desc
-//     .then((data) => {
-//       res.send(data)
-//     })
-//     .catch((err) => {
-//       console.log(err);
-//       res.send('error')
-//     });
-// })
+app.get('/users', (req, res) => {
+  // Users.find().sort({ idx: -1 }) // -1 = desc
+  //   .then((data) => {
+  //     res.send(data)
+  //   })
+  //   .catch((err) => {
+  //     console.log(err);
+  //     res.send('error')
+  //   });
+  res.send('/user page')
+})
 
 // app.get('/board', (req, res) => {
 //   Board.find().sort({ idx: -1 })
