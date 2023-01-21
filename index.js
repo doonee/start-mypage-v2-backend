@@ -1,6 +1,6 @@
 const express = require('express')
 const app = express()
-//require('dotenv').config()
+require('dotenv').config()
 // const port = process.env.REACT_APP_PORT
 
 // // post로 보내는 값 받는 옵션
