@@ -27,6 +27,10 @@ const { Users } = require("./Model/usersModel");
 const { Board } = require("./Model/boardModel");
 
 // routers
+app.get('/', (req, res) => {
+  res.send('Hello, World!')
+})
+
 app.get('/users', (req, res) => {
   Users.find().sort({ idx: -1 }) // -1 = desc
     .then((data) => {
