@@ -30,6 +30,8 @@ const { Board } = require("./Model/boardModel");
 const { Users } = require("./Model/usersModel");
 const { Configs } = require("./Model/configsModel");
 const { Groups } = require("./Model/groupsModel");
+const { Categories } = require("./Model/categoriesModel");
+const { Bookmarks } = require("./Model/bookmarksModel");
 
 // routers
 app.get('/', (req, res) => {
@@ -69,6 +71,24 @@ app.get('/configs', (req, res) => {
 
 app.get('/groups', (req, res) => {
   Groups.find().sort({ sortNo: 1 })
+    .then(data => res.send(data))
+    .catch((err) => {
+      console.error(err);
+      res.send('error')
+    });
+})
+
+app.get('/categories', (req, res) => {
+  Categories.find().sort({ sortNo: 1 })
+    .then(data => res.send(data))
+    .catch((err) => {
+      console.error(err);
+      res.send('error')
+    });
+})
+
+app.get('/bookmarks', (req, res) => {
+  Bookmarks.find().sort({ sortNo: 1 })
     .then(data => res.send(data))
     .catch((err) => {
       console.error(err);
@@ -139,6 +159,30 @@ app.post('/group/add', async (req, res) => {
     });
 })
 
+app.post('/category/add', async (req, res) => {
+  const reqData = req.body
+  // data 옮긴 후 idx 방식으로 자동증가 되게 변경해야 함!
+  await Categories.collection.insertOne(reqData)
+    .then(() => {
+      res.send('ok')
+    }).catch((err) => {
+      console.error(err);
+      res.send('error');
+    });
+})
+
+app.post('/bookmark/add', async (req, res) => {
+  const reqData = req.body
+  // data 옮긴 후 idx 방식으로 자동증가 되게 변경해야 함!
+  await Bookmarks.collection.insertOne(reqData)
+    .then(() => {
+      res.send('ok')
+    }).catch((err) => {
+      console.error(err);
+      res.send('error');
+    });
+})
+
 app.get('/board/:id', (req, res) => {
   const { id } = req.params;
   Board.findOne({ _id: id })
@@ -169,10 +213,30 @@ app.get('/config/:userId', (req, res) => {
     })
 })
 
-
 app.get('/group/:id', (req, res) => {
   const { id } = req.params;
   Groups.findOne({ _id: id })
+    .then(data => res.send(data))
+    .catch(err => {
+      console.error(err)
+      res.send('error')
+    })
+})
+
+app.get('/category/:id', (req, res) => {
+  const { id } = req.params;
+  Categories.findOne({ _id: id })
+    .then(data => res.send(data))
+    .catch(err => {
+      console.error(err)
+      res.send('error')
+    })
+})
+
+app.get('/bookmark/:id', (req, res) => {
+  const { id } = req.params;
+  console.log("🚀 ~ file: index.js:238 ~ app.get ~ id", id)
+  Bookmarks.findOne({ _id: id })
     .then(data => res.send(data))
     .catch(err => {
       console.error(err)
@@ -243,6 +307,39 @@ app.put('/group/edit', (req, res) => {
   })
 })
 
+app.put('/category/edit', (req, res) => {
+  const { _id, categoryName, sortNo, isPublic } = req.body;
+  Categories.findOneAndUpdate({ _id }, {
+    $set: {
+      categoryName,
+      sortNo,
+      isPublic
+    }
+  }).then(() => {
+    res.send('ok')
+  }).catch(err => {
+    console.error(err)
+    res.send('error')
+  })
+})
+
+app.put('/bookmark/edit', (req, res) => {
+  const { _id, categoryNo, bookmarkName, sortNo, isPublic } = req.body;
+  Bookmarks.findOneAndUpdate({ _id }, {
+    $set: {
+      categoryNo,
+      bookmarkName,
+      sortNo,
+      isPublic
+    }
+  }).then(() => {
+    res.send('ok')
+  }).catch(err => {
+    console.error(err)
+    res.send('error')
+  })
+})
+
 app.delete('/board/delete', (req, res) => {
   const { id } = req.body;
   Board.deleteOne({ _id: id })
@@ -282,6 +379,30 @@ app.delete('/config/delete', (req, res) => {
 app.delete('/group/delete', (req, res) => {
   const { _id } = req.body;
   Groups.deleteOne({ _id })
+    .then(() => {
+      res.send('ok')
+    })
+    .catch((err) => {
+      console.err(err)
+      res.send('error')
+    })
+})
+
+app.delete('/category/delete', (req, res) => {
+  const { _id } = req.body;
+  Categories.deleteOne({ _id })
+    .then(() => {
+      res.send('ok')
+    })
+    .catch((err) => {
+      console.err(err)
+      res.send('error')
+    })
+})
+
+app.delete('/bookmark/delete', (req, res) => {
+  const { _id } = req.body;
+  Bookmarks.deleteOne({ _id })
     .then(() => {
       res.send('ok')
     })
