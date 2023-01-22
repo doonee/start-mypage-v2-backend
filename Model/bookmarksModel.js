@@ -3,6 +3,7 @@ const mongoose = require("mongoose");
 const bookmarkSchema = new mongoose.Schema(
   {
     userId: String,
+    groupNo: Number,
     categoryNo: Number,
     bookmarkNo: Number,
     bookmarkName: String,
