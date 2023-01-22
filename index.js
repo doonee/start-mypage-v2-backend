@@ -28,6 +28,8 @@ app.use(express.json()) // To parse the incoming requests with JSON payloads
 // mongoose 모델
 const { Board } = require("./Model/boardModel");
 const { Users } = require("./Model/usersModel");
+const { Configs } = require("./Model/configsModel");
+const { Groups } = require("./Model/groupsModel");
 
 // routers
 app.get('/', (req, res) => {
@@ -49,6 +51,24 @@ app.get('/users', (req, res) => {
 
 app.get('/board', (req, res) => {
   Board.find().sort({ idx: -1 })
+    .then(data => res.send(data))
+    .catch((err) => {
+      console.error(err);
+      res.send('error')
+    });
+})
+
+app.get('/configs', (req, res) => {
+  Configs.find().sort({ idx: -1 })
+    .then(data => res.send(data))
+    .catch((err) => {
+      console.error(err);
+      res.send('error')
+    });
+})
+
+app.get('/groups', (req, res) => {
+  Groups.find().sort({ sortNo: 1 })
     .then(data => res.send(data))
     .catch((err) => {
       console.error(err);
@@ -93,6 +113,32 @@ app.post('/board/add', async (req, res) => {
   });
 })
 
+app.post('/config/add', async (req, res) => {
+  const reqData = req.body
+  const topRow = await Configs.findOne().sort({ idx: -1 })
+  const idx = (topRow && topRow.idx) ? parseInt(topRow.idx) + 1 : 1
+  reqData.idx = idx
+  await Configs.collection.insertOne(reqData)
+    .then(() => {
+      res.send('ok')
+    }).catch((err) => {
+      console.error(err);
+      res.send('error');
+    });
+})
+
+app.post('/group/add', async (req, res) => {
+  const reqData = req.body
+  // data 옮긴 후 idx 방식으로 자동증가 되게 변경해야 함!
+  await Groups.collection.insertOne(reqData)
+    .then(() => {
+      res.send('ok')
+    }).catch((err) => {
+      console.error(err);
+      res.send('error');
+    });
+})
+
 app.get('/board/:id', (req, res) => {
   const { id } = req.params;
   Board.findOne({ _id: id })
@@ -103,9 +149,30 @@ app.get('/board/:id', (req, res) => {
     })
 })
 
-app.get('/users/:id', (req, res) => {
+app.get('/user/:id', (req, res) => {
   const { id } = req.params;
   Users.findOne({ _id: id })
+    .then(data => res.send(data))
+    .catch(err => {
+      console.error(err)
+      res.send('error')
+    })
+})
+
+app.get('/config/:userId', (req, res) => {
+  const { userId } = req.params;
+  Configs.findOne({ userId })
+    .then(data => res.send(data))
+    .catch(err => {
+      console.error(err)
+      res.send('error')
+    })
+})
+
+
+app.get('/group/:id', (req, res) => {
+  const { id } = req.params;
+  Groups.findOne({ _id: id })
     .then(data => res.send(data))
     .catch(err => {
       console.error(err)
@@ -128,11 +195,45 @@ app.put('/board/edit', (req, res) => {
   })
 })
 
-app.put('/users/edit', (req, res) => {
+app.put('/user/edit', (req, res) => {
   const { id, userPass } = req.body;
   Users.findOneAndUpdate({ _id: id }, {
     $set: {
       userPass
+    }
+  }).then(() => {
+    res.send('ok')
+  }).catch(err => {
+    console.error(err)
+    res.send('error')
+  })
+})
+
+app.put('/config/edit', (req, res) => {
+  const { userId, startGroupIdx, pageTitle, theme, isTargetBlank, isBasicSort } = req.body;
+  Configs.findOneAndUpdate({ userId }, {
+    $set: {
+      startGroupIdx,
+      pageTitle,
+      theme,
+      isTargetBlank,
+      isBasicSort
+    }
+  }).then(() => {
+    res.send('ok')
+  }).catch(err => {
+    console.error(err)
+    res.send('error')
+  })
+})
+
+app.put('/group/edit', (req, res) => {
+  const { _id, groupName, sortNo, isPublic } = req.body;
+  Groups.findOneAndUpdate({ _id }, {
+    $set: {
+      groupName,
+      sortNo,
+      isPublic
     }
   }).then(() => {
     res.send('ok')
@@ -154,7 +255,7 @@ app.delete('/board/delete', (req, res) => {
     })
 })
 
-app.delete('/users/delete', (req, res) => {
+app.delete('/user/delete', (req, res) => {
   const { id } = req.body;
   Users.deleteOne({ _id: id })
     .then(() => {
@@ -166,9 +267,33 @@ app.delete('/users/delete', (req, res) => {
     })
 })
 
+app.delete('/config/delete', (req, res) => {
+  const { userId } = req.body;
+  Configs.deleteOne({ userId })
+    .then(() => {
+      res.send('ok')
+    })
+    .catch((err) => {
+      console.err(err)
+      res.send('error')
+    })
+})
+
+app.delete('/group/delete', (req, res) => {
+  const { _id } = req.body;
+  Groups.deleteOne({ _id })
+    .then(() => {
+      res.send('ok')
+    })
+    .catch((err) => {
+      console.err(err)
+      res.send('error')
+    })
+})
+
 // 404 Not Found : 라우트 가장 아래에 위치
 app.all('*', (req, res) => {
-  res.status(404).send('Not Found!')
+  res.status(404).send('none')
 })
 
 // mongoose
