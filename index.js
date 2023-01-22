@@ -26,7 +26,7 @@ app.use(express.json()) // To parse the incoming requests with JSON payloads
 // })
 
 // mongoose
-const { startSession } = require('mongoose')
+const { mongoose, startSession } = require('mongoose')
 // mongoose 모델
 const { Board } = require("./Model/boardModel");
 const { Users } = require("./Model/usersModel");
@@ -102,12 +102,8 @@ app.post('/user/add', async (req, res) => {
   const params = req.body;
   const topRow = await Users.findOne().sort({ idx: -1 })
   const idx = (topRow && topRow.idx) ? parseInt(topRow.idx) + 1 : 1
-  await Users.create({
-    idx,
-    userId: params.userId,
-    userPass: params.userPass,
-    createdAt: params.createdAt
-  })
+  params.idx = idx;
+  await Users.create(params)
     .then(() => {
       res.send('ok')
     })
@@ -121,26 +117,22 @@ app.post('/board/add', async (req, res) => {
   const params = req.body;
   const topRow = await Board.findOne().sort({ idx: -1 })
   const idx = (topRow && topRow.idx) ? parseInt(topRow.idx) + 1 : 1
-  await Board.create({
-    idx,
-    title: params.title,
-    content: params.content,
-    writer: params.writer,
-    createdAt: params.createdAt
-  }).then(() => {
-    res.send('ok')
-  }).catch((err) => {
-    console.error(err);
-    res.send('error');
-  });
+  params.idx = idx
+  await Board.create(params)
+    .then(() => {
+      res.send('ok')
+    }).catch((err) => {
+      console.error(err);
+      res.send('error');
+    });
 })
 
 app.post('/config/add', async (req, res) => {
-  const reqData = req.body
+  const params = req.body
   const topRow = await Configs.findOne().sort({ idx: -1 })
   const idx = (topRow && topRow.idx) ? parseInt(topRow.idx) + 1 : 1
-  reqData.idx = idx
-  await Configs.create(reqData)
+  params.idx = idx
+  await Configs.create(params)
     .then(() => {
       res.send('ok')
     }).catch((err) => {
@@ -150,9 +142,9 @@ app.post('/config/add', async (req, res) => {
 })
 
 app.post('/group/add', async (req, res) => {
-  const reqData = req.body
+  const params = req.body
   // data 옮긴 후 idx 방식으로 자동증가 되게 변경해야 함!
-  await Groups.create(reqData)
+  await Groups.create(params)
     .then(() => {
       res.send('ok')
     }).catch((err) => {
@@ -162,9 +154,9 @@ app.post('/group/add', async (req, res) => {
 })
 
 app.post('/category/add', async (req, res) => {
-  const reqData = req.body
+  const params = req.body
   // data 옮긴 후 idx 방식으로 자동증가 되게 변경해야 함!
-  await Categories.create(reqData)
+  await Categories.create(params)
     .then(() => {
       res.send('ok')
     }).catch((err) => {
@@ -174,9 +166,9 @@ app.post('/category/add', async (req, res) => {
 })
 
 app.post('/bookmark/add', async (req, res) => {
-  const reqData = req.body
+  const params = req.body
   // data 옮긴 후 idx 방식으로 자동증가 되게 변경해야 함!
-  await Bookmarks.create(reqData)
+  await Bookmarks.create(params)
     .then(() => {
       res.send('ok')
     }).catch((err) => {
@@ -378,26 +370,6 @@ app.delete('/config/delete', (req, res) => {
     })
 })
 
-// router.post('/answer', async (req, res, next) => {
-//   const session = await startSession();
-//   try {
-//     session.startTransaction();
-//     const answer = await Answer.create({
-//       uid: req.body.uid,
-//       answer: req.body.answer,
-//     }, { session });
-//     const question = await Question.update({ _id: req.body.question_id }, { answer: answer._id, isAnswered: true }, { session });
-//     await session.commitTransaction();
-//     session.endSession();
-//     res.send(formatWriteResult(question));
-//   } catch (err) {
-//     await session.abortTransaction();
-//     session.endSession();
-//     console.error(err);
-//     next(err);
-//   }
-// });
-
 app.delete('/group/delete', async (req, res) => {
   const { _id, groupNo } = req.body;
   const session = await startSession();
@@ -416,18 +388,6 @@ app.delete('/group/delete', async (req, res) => {
     res.send('error')
   }
 })
-
-// app.delete('/category/delete', (req, res) => {
-//   const { _id } = req.body;
-//   Categories.deleteOne({ _id })
-//     .then(() => {
-//       res.send('ok')
-//     })
-//     .catch((err) => {
-//       console.err(err)
-//       res.send('error')
-//     })
-// })
 
 app.delete('/category/delete', async (req, res) => {
   const { _id, categoryNo } = req.body;
@@ -466,7 +426,6 @@ app.all('*', (req, res) => {
 
 // mongoose
 if (!process.env.MONGODB_URI) throw new Error('db connection error...')
-const mongoose = require('mongoose')
 mongoose
   .set('strictQuery', true) // 없으면 경고 발생함!
   .connect(process.env.MONGODB_URI)
