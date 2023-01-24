@@ -1,6 +1,8 @@
 var router = require('express').Router();
 const { startSession } = require('mongoose');
 const { Groups } = require('../Model/groupsModel');
+const { Categories } = require('../Model/categoriesModel');
+const { Bookmarks } = require('../Model/bookmarksModel');
 
 router.post('/group/add', async (req, res) => {
   const params = req.body

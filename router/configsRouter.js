@@ -55,7 +55,7 @@ router.put('/config/edit', (req, res) => {
 
 router.delete('/config/delete', (req, res) => {
   const { userId } = req.body;
-  Configs.deleteOne({ userId })
+  Configs.deleteMany({ userId })
     .then(() => {
       res.send('ok')
     })
