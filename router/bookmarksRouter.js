@@ -25,7 +25,6 @@ router.get('/bookmarks', (req, res) => {
 
 router.get('/bookmark/:id', (req, res) => {
   const { id } = req.params;
-  console.log("🚀 ~ file: index.js:238 ~ router.get ~ id", id)
   Bookmarks.findOne({ _id: id })
     .then(data => res.send(data))
     .catch(err => {

@@ -31,6 +31,7 @@ const { mongoose } = require('mongoose');
 // routers
 app.use('/', require('./router/boardRouter'));
 app.use('/', require('./router/usersRouter'));
+app.use('/', require('./router/appconfigRouter'));
 app.use('/', require('./router/configsRouter'));
 app.use('/', require('./router/groupsRouter'));
 app.use('/', require('./router/categoriesRouter'));
