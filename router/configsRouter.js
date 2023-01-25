@@ -36,11 +36,11 @@ router.get('/config/:userId', (req, res) => {
 })
 
 router.put('/config/edit', (req, res) => {
-  const { userId, startGroupIdx, pageTitle, theme, isTargetBlank, isBasicSort } = req.body;
+  const { userId, startGroupIdx, appTitle, theme, isTargetBlank, isBasicSort } = req.body;
   Configs.findOneAndUpdate({ userId }, {
     $set: {
       startGroupIdx,
-      pageTitle,
+      appTitle,
       theme,
       isTargetBlank,
       isBasicSort

@@ -5,7 +5,7 @@ const configSchema = new mongoose.Schema(
     idx: Number,
     userId: String,
     startGroupIdx: Number,
-    pageTitle: String,
+    appTitle: String,
     theme: String,
     isTargetBlank: Boolean,
     isBasicSort: Boolean
