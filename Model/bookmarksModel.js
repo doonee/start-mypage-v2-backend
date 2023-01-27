@@ -9,7 +9,9 @@ const bookmarkSchema = new mongoose.Schema(
     bookmarkName: String,
     bookmarkUri: String,
     sortNo: Number,
-    isPublic: Boolean
+    isImportant: Boolean,
+    isLineThrough: Boolean,
+    memo: String
   },
   { timestamps: false, collection: "bookmarks" }
 );
