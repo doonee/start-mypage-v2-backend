@@ -17,7 +17,8 @@ router.post('/group/add', async (req, res) => {
 })
 
 router.get('/groups', (req, res) => {
-  Groups.find().sort({ sortNo: 1 })
+  // userId 는 현재 브라우저의 암호화 된 localStorage userId
+  Groups.find({ userId: 'abc' }).sort({ sortNo: 1 }).lean()
     .then(data => res.send(data))
     .catch((err) => {
       console.error(err);

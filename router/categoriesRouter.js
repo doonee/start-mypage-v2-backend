@@ -69,13 +69,11 @@ router.put('/category/edit', (req, res) => {
 
 router.delete('/category/delete', async (req, res) => {
   const { _id } = req.body;
-  console.log("🚀 ~ file: categoriesRouter.js:72 ~ router.delete ~ _id", _id)
   const session = await startSession();
   try {
     session.startTransaction();
-    const cate = await Categories.findOne({ _id }, { categoryNo: 1 }).lean()
-    console.log("🚀 ~ file: categoriesRouter.js:76 ~ router.delete ~ cate", cate)
-    await Bookmarks.deleteMany({ categoryNo: cate.categoryNo }, { session });
+    const { categoryNo } = await Categories.findOne({ _id }, { _id: -1, categoryNo: 1 }).lean()
+    await Bookmarks.deleteMany({ categoryNo }, { session });
     await Categories.deleteOne({ _id }, { session });
     await session.commitTransaction();
     session.endSession();
