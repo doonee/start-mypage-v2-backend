@@ -1,14 +1,28 @@
 var router = require('express').Router();
 const { startSession } = require('mongoose');
+// const { Groups } = require('../Model/groupsModel');
 const { Categories } = require('../Model/categoriesModel');
 const { Bookmarks } = require('../Model/bookmarksModel');
 
 router.post('/category/add', async (req, res) => {
-  const params = req.body
-  // data 옮긴 후 idx 방식으로 자동증가 되게 변경해야 함!
+  const params = req.body;
+  const topRow = await Categories
+    .findOne(
+      {},
+      { _id: -1, idx: 1 })
+    .sort({ idx: -1 }).lean()
+  const idx = (topRow && topRow.idx) ? parseInt(topRow.idx) + 1 : 1
+  const cateTopRow = await Categories
+    .findOne(
+      { groupNo: parseInt(params.groupNo) },
+      { _id: 1, sortNo: 1 })
+    .sort({ sortNo: -1 }).lean()
+  const sortNo = (cateTopRow && cateTopRow.sortNo) ? parseInt(cateTopRow.sortNo) + 1 : 1
+  params.idx = idx
+  params.sortNo = sortNo
   await Categories.create(params)
-    .then(() => {
-      res.send('ok')
+    .then((result) => {
+      res.send(result._id);
     }).catch((err) => {
       console.error(err);
       res.send('error');
@@ -16,7 +30,7 @@ router.post('/category/add', async (req, res) => {
 })
 
 router.get('/categories', (req, res) => {
-  Categories.find().sort({ sortNo: 1 })
+  Categories.find().sort({ createdAt: -1 })
     .then(data => res.send(data))
     .catch((err) => {
       console.error(err);
@@ -35,12 +49,15 @@ router.get('/category/:id', (req, res) => {
 })
 
 router.put('/category/edit', (req, res) => {
-  const { _id, categoryName, sortNo, isPublic } = req.body;
-  Categories.findOneAndUpdate({ _id }, {
+  const { categoryId, groupNo, categoryName, sortNo, isImportant, isLinethrough, memo } = req.body;
+  Categories.findOneAndUpdate({ _id: categoryId }, {
     $set: {
+      groupNo,
       categoryName,
       sortNo,
-      isPublic
+      isImportant,
+      isLinethrough,
+      memo
     }
   }).then(() => {
     res.send('ok')
