@@ -9,16 +9,16 @@ router.post('/category/add', async (req, res) => {
   const topRow = await Categories
     .findOne(
       {},
-      { _id: -1, idx: 1 })
-    .sort({ idx: -1 }).lean()
-  const idx = (topRow && topRow.idx) ? parseInt(topRow.idx) + 1 : 1
+      { _id: -1, categoryNo: 1 })
+    .sort({ categoryNo: -1 }).lean()
+  const categoryNo = (topRow && topRow.categoryNo) ? parseInt(topRow.categoryNo) + 1 : 1
   const cateTopRow = await Categories
     .findOne(
       { groupNo: parseInt(params.groupNo) },
       { _id: 1, sortNo: 1 })
     .sort({ sortNo: -1 }).lean()
   const sortNo = (cateTopRow && cateTopRow.sortNo) ? parseInt(cateTopRow.sortNo) + 1 : 1
-  params.idx = idx
+  params.categoryNo = categoryNo
   params.sortNo = sortNo
   await Categories.create(params)
     .then((result) => {

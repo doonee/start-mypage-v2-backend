@@ -5,8 +5,21 @@ const { Categories } = require('../Model/categoriesModel');
 const { Bookmarks } = require('../Model/bookmarksModel');
 
 router.post('/group/add', async (req, res) => {
-  const params = req.body
-  // data 옮긴 후 idx 방식으로 자동증가 되게 변경해야 함!
+  const params = req.body;
+  const topRow = await Groups
+    .findOne(
+      {},
+      { _id: -1, groupNo: 1 })
+    .sort({ groupNo: -1 }).lean()
+  const groupNo = (topRow && topRow.groupNo) ? parseInt(topRow.groupNo) + 1 : 1
+  const groupTopRow = await Groups
+    .findOne(
+      {},
+      { _id: 1, sortNo: 1 })
+    .sort({ sortNo: -1 }).lean()
+  const sortNo = (groupTopRow && groupTopRow.sortNo) ? parseInt(groupTopRow.sortNo) + 1 : 1
+  params.groupNo = groupNo
+  params.sortNo = sortNo
   await Groups.create(params)
     .then(() => {
       res.send('ok')
@@ -17,6 +30,15 @@ router.post('/group/add', async (req, res) => {
 })
 
 router.get('/groups', (req, res) => {
+  Groups.find().sort({ groupNo: -1 }).lean()
+    .then(data => res.send(data))
+    .catch((err) => {
+      console.error(err);
+      res.send('error')
+    });
+})
+
+router.get('/groups/:userId', (req, res) => {
   // userId 는 현재 브라우저의 암호화 된 localStorage userId
   Groups.find({ userId: 'abc' }).sort({ sortNo: 1 }).lean()
     .then(data => res.send(data))
@@ -37,12 +59,15 @@ router.get('/group/:id', (req, res) => {
 })
 
 router.put('/group/edit', (req, res) => {
-  const { _id, groupName, sortNo, isPublic } = req.body;
+  const { _id, groupName, isImportant, isLinethrough, isPublic, memo } = req.body;
   Groups.findOneAndUpdate({ _id }, {
     $set: {
+      _id,
       groupName,
-      sortNo,
-      isPublic
+      isImportant,
+      isLinethrough,
+      isPublic,
+      memo
     }
   }).then(() => {
     res.send('ok')

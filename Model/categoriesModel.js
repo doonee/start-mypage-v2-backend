@@ -2,7 +2,6 @@ const mongoose = require("mongoose");
 
 const categorySchema = new mongoose.Schema(
   {
-    idx: Number,
     userId: String,
     groupNo: Number,
     categoryNo: Number,

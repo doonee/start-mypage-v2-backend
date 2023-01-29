@@ -6,10 +6,10 @@ const groupSchema = new mongoose.Schema(
     groupNo: Number,
     groupName: String,
     sortNo: Number,
+    isImportant: Boolean,
+    isLinethrough: Boolean,
     isPublic: Boolean,
-    IsImportant: Boolean,
-    IsLinethrough: Boolean,
-    Memo: String,
+    memo: String,
   },
   { timestamps: true, collection: "groups" }
 );
