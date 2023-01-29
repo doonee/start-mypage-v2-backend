@@ -6,18 +6,14 @@ const { Bookmarks } = require('../Model/bookmarksModel');
 
 router.post('/group/add', async (req, res) => {
   const params = req.body;
-  const topRow = await Groups
-    .findOne(
-      {},
-      { _id: -1, groupNo: 1 })
+  const topRow = await Groups.findOne({}, { _id: -1, groupNo: 1 })
     .sort({ groupNo: -1 }).lean()
-  const groupNo = (topRow && topRow.groupNo) ? parseInt(topRow.groupNo) + 1 : 1
-  const groupTopRow = await Groups
-    .findOne(
-      {},
-      { _id: 1, sortNo: 1 })
+  const groupNo = (topRow && topRow.groupNo) ?
+    parseInt(topRow.groupNo) + 1 : 1
+  const groupTopRow = await Groups.findOne({}, { _id: 1, sortNo: 1 })
     .sort({ sortNo: -1 }).lean()
-  const sortNo = (groupTopRow && groupTopRow.sortNo) ? parseInt(groupTopRow.sortNo) + 1 : 1
+  const sortNo = (groupTopRow && groupTopRow.sortNo) ?
+    parseInt(groupTopRow.sortNo) + 1 : 1
   params.groupNo = groupNo
   params.sortNo = sortNo
   await Groups.create(params)
@@ -78,10 +74,12 @@ router.put('/group/edit', (req, res) => {
 })
 
 router.delete('/group/delete', async (req, res) => {
-  const { _id, groupNo } = req.body;
+  const { _id } = req.body;
   const session = await startSession();
   try {
     session.startTransaction();
+    const topRow = await Groups.findOne({ _id }, { _id: -1, groupNo: 1 }).lean();
+    const groupNo = topRow.groupNo;
     await Bookmarks.deleteMany({ groupNo }, { session });
     await Categories.deleteMany({ groupNo }, { session });
     await Groups.deleteOne({ _id }, { session });
