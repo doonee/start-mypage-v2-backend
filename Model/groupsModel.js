@@ -6,9 +6,12 @@ const groupSchema = new mongoose.Schema(
     groupNo: Number,
     groupName: String,
     sortNo: Number,
-    isPublic: Boolean
+    isPublic: Boolean,
+    IsImportant: Boolean,
+    IsLinethrough: Boolean,
+    Memo: String,
   },
-  { timestamps: false, collection: "groups" }
+  { timestamps: true, collection: "groups" }
 );
 
 const Groups = mongoose.model("groups", groupSchema);
