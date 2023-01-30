@@ -73,6 +73,27 @@ router.put('/group/edit', (req, res) => {
   })
 })
 
+router.put('/group/edit/sort', async (req, res) => {
+  try {
+    const params = req.body;
+    const userId = 'abc' // 서버에서 추출
+    const queries = []
+    params.forEach((item) => {
+      queries.push({
+        updateOne: {
+          filter: { _id: item._id, userId: userId },
+          update: { sortNo: item.sortNo },
+        },
+      });
+    });
+    Groups.bulkWrite(queries)
+    res.send('ok')
+  } catch (err) {
+    console.log(err)
+    res.send('error')
+  }
+})
+
 router.delete('/group/delete', async (req, res) => {
   const { _id } = req.body;
   const session = await startSession();
