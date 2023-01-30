@@ -30,7 +30,7 @@ router.post('/category/add', async (req, res) => {
 })
 
 router.get('/categories', (req, res) => {
-  Categories.find().sort({ createdAt: -1 })
+  Categories.find().sort({ categoryNo: -1 })
     .then(data => res.send(data))
     .catch((err) => {
       console.error(err);
@@ -38,9 +38,18 @@ router.get('/categories', (req, res) => {
     });
 })
 
-router.get('/category/:id', (req, res) => {
-  const { id } = req.params;
-  Categories.findOne({ _id: id })
+router.get('/categories/:userId', (req, res) => {
+  Categories.find({ userId: req.params.userId }).sort({ sortNo: -1 })
+    .then(data => res.send(data))
+    .catch((err) => {
+      console.error(err);
+      res.send('error')
+    });
+})
+
+router.get('/category/:_id', (req, res) => {
+  const { _id } = req.params;
+  Categories.findOne({ _id })
     .then(data => res.send(data))
     .catch(err => {
       console.error(err)
