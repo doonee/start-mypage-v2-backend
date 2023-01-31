@@ -1,5 +1,5 @@
 var router = require('express').Router();
-const { startSession } = require('mongoose');
+const { mongoose, startSession } = require('mongoose');
 const { Groups } = require('../Model/groupsModel');
 const { Categories } = require('../Model/categoriesModel');
 const { Bookmarks } = require('../Model/bookmarksModel');
@@ -45,6 +45,8 @@ router.get('/groups/:userId', (req, res) => {
 })
 
 router.get('/group/:id', (req, res) => {
+  if (req.params && req.params._id === 'newGroup') res.send(null)
+
   const { id } = req.params;
   Groups.findOne({ _id: id })
     .then(data => res.send(data))
