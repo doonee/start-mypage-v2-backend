@@ -1,11 +1,11 @@
 var router = require('express').Router();
 const { startSession } = require('mongoose');
-// const { Groups } = require('../Model/groupsModel');
 const { Categories } = require('../Model/categoriesModel');
 const { Bookmarks } = require('../Model/bookmarksModel');
 
 router.post('/category/add', async (req, res) => {
   const params = req.body;
+  console.log("🚀 ~ file: categoriesRouter.js:9 ~ router.post ~ params", params)
   const topRow = await Categories
     .findOne(
       {},
