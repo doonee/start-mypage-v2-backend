@@ -1,11 +1,11 @@
 var router = require('express').Router();
 const { startSession } = require('mongoose');
+const { Groups } = require('../Model/groupsModel');
 const { Categories } = require('../Model/categoriesModel');
 const { Bookmarks } = require('../Model/bookmarksModel');
 
 router.post('/category/add', async (req, res) => {
   const params = req.body;
-  console.log("🚀 ~ file: categoriesRouter.js:9 ~ router.post ~ params", params)
   const topRow = await Categories
     .findOne(
       {},
@@ -36,6 +36,33 @@ router.get('/categories', (req, res) => {
       console.error(err);
       res.send('error')
     });
+})
+
+// 개인용
+router.get('/categories/my/:groupNo', (req, res) => {
+  Categories.find({ groupNo: req.params.groupNo }).sort({ sortNo: 1 }).lean()
+    .then(data => res.send(data))
+    .catch((err) => {
+      console.error(err);
+      res.send('error')
+    });
+})
+
+// 공개용
+router.get('/categories/open/:groupId', async (req, res) => {
+  try {
+    const row = await Groups.findOne({ _id: req.params.groupId }).lean()
+    const groupNo = (row && row.groupNo) ? row.groupNo : null
+    if (!groupNo) {
+      console.error('그룹번호가 존재하지 않습니다.')
+      res.send('error')
+    }
+    await Categories.find({ groupNo }).sort({ sortNo: 1 }).lean()
+      .then(data => res.send(data))
+  } catch (err) {
+    console.error(err)
+    res.send('error')
+  }
 })
 
 router.get('/categories/:userId', (req, res) => {
@@ -74,6 +101,27 @@ router.put('/category/edit', (req, res) => {
     console.error(err)
     res.send('error')
   })
+})
+
+router.put('/category/edit/sort', async (req, res) => {
+  try {
+    const params = req.body;
+    const userId = 'abc' // 서버에서 추출
+    const queries = []
+    params.forEach((item) => {
+      queries.push({
+        updateOne: {
+          filter: { _id: item._id, userId: userId },
+          update: { sortNo: item.sortNo },
+        },
+      });
+    });
+    Categories.bulkWrite(queries)
+    res.send('ok')
+  } catch (err) {
+    console.log(err)
+    res.send('error')
+  }
 })
 
 router.delete('/category/delete', async (req, res) => {
