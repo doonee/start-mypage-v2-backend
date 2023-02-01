@@ -30,7 +30,7 @@ router.post('/category/add', async (req, res) => {
 })
 
 router.get('/categories', (req, res) => {
-  Categories.find().sort({ categoryNo: -1 })
+  Categories.find().sort({ categoryNo: -1 }).lean()
     .then(data => res.send(data))
     .catch((err) => {
       console.error(err);
@@ -85,8 +85,8 @@ router.get('/category/:_id', (req, res) => {
 })
 
 router.put('/category/edit', (req, res) => {
-  const { categoryId, groupNo, categoryName, sortNo, isImportant, isLinethrough, memo } = req.body;
-  Categories.findOneAndUpdate({ _id: categoryId }, {
+  const { _id, groupNo, categoryName, sortNo, isImportant, isLinethrough, memo } = req.body;
+  Categories.findOneAndUpdate({ _id }, {
     $set: {
       groupNo,
       categoryName,
