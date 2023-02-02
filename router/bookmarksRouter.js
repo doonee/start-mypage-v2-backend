@@ -19,6 +19,7 @@ router.post('/bookmark/add', async (req, res) => {
   const sortNo = (bookTopRow && bookTopRow.sortNo) ? parseInt(bookTopRow.sortNo) + 1 : 1
   params.bookmarkNo = bookmarkNo
   params.sortNo = sortNo
+  params.userId = 'abc' // 세션에서...
   await Bookmarks.create(params)
     .then((result) => {
       res.send(result._id);
