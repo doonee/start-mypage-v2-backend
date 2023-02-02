@@ -1,5 +1,6 @@
 var router = require('express').Router();
 const { startSession } = require('mongoose');
+const { Categories } = require('../Model/categoriesModel');
 const { Bookmarks } = require('../Model/bookmarksModel');
 
 router.post('/bookmark/add', async (req, res) => {
@@ -21,6 +22,33 @@ router.get('/bookmarks', (req, res) => {
       console.error(err);
       res.send('error')
     });
+})
+
+// 개인용
+router.get('/my/bookmarks/:categoryNo', (req, res) => {
+  Bookmarks.find({ categoryNo: req.params.categoryNo }).sort({ sortNo: 1 }).lean()
+    .then(data => res.send(data))
+    .catch((err) => {
+      console.error(err);
+      res.send('error')
+    });
+})
+
+// 공개용
+router.get('/open/bookmarks/:categoryId', async (req, res) => {
+  try {
+    const row = await Categories.findOne({ _id: req.params.categoryId }).lean()
+    const CategoryNo = (row && row.categoryNo) ?? null // 대소문자 구별 주의!!
+    if (!CategoryNo) {
+      console.error('카테고리 번호가 존재하지 않습니다.')
+      res.send('error')
+    }
+    await Bookmarks.find({ CategoryNo }).sort({ sortNo: 1 }).lean()
+      .then(data => res.send(data))
+  } catch (err) {
+    console.error(err)
+    res.send('error')
+  }
 })
 
 router.get('/bookmark/:id', (req, res) => {
