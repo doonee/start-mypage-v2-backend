@@ -40,10 +40,14 @@ router.get('/categories', (req, res) => {
 
 // 개인용
 router.get('/my/categories/:groupNo', (req, res) => {
+  if (!req.params || !req.params.groupNo) {
+    console.error('그룹번호가 올바르지 않습니다.')
+    res.send('error')
+  }
   Categories.find({ groupNo: req.params.groupNo }).sort({ sortNo: 1 }).lean()
     .then(data => res.send(data))
     .catch((err) => {
-      console.error(err);
+      console.error(err)
       res.send('error')
     });
 })

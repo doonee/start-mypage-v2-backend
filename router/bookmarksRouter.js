@@ -26,7 +26,11 @@ router.get('/bookmarks', (req, res) => {
 
 // 개인용
 router.get('/my/bookmarks/:categoryNo', (req, res) => {
-  Bookmarks.find({ categoryNo: req.params.categoryNo }).sort({ sortNo: 1 }).lean()
+  if (!parseInt(req.params.categoryNo)) {
+    console.error('categoryNo error')
+    res.send('error')
+  }
+  Bookmarks.find({ categoryNo: parseInt(req.params.categoryNo) }).sort({ sortNo: 1 }).lean()
     .then(data => res.send(data))
     .catch((err) => {
       console.error(err);
@@ -37,7 +41,7 @@ router.get('/my/bookmarks/:categoryNo', (req, res) => {
 // 공개용
 router.get('/open/bookmarks/:categoryId', async (req, res) => {
   try {
-    const row = await Categories.findOne({ _id: req.params.categoryId }).lean()
+    const row = await Categories.findOne({ _id: parseInt(req.params.categoryId) }).lean()
     const CategoryNo = (row && row.categoryNo) ?? null // 대소문자 구별 주의!!
     if (!CategoryNo) {
       console.error('카테고리 번호가 존재하지 않습니다.')
