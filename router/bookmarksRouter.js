@@ -4,11 +4,24 @@ const { Categories } = require('../Model/categoriesModel');
 const { Bookmarks } = require('../Model/bookmarksModel');
 
 router.post('/bookmark/add', async (req, res) => {
-  const params = req.body
-  // data 옮긴 후 idx 방식으로 자동증가 되게 변경해야 함!
+  const params = req.body;
+  const topRow = await Bookmarks
+    .findOne(
+      {},
+      { _id: -1, bookmarkNo: 1 })
+    .sort({ bookmarkNo: -1 }).lean()
+  const bookmarkNo = (topRow && topRow.bookmarkNo) ? parseInt(topRow.bookmarkNo) + 1 : 1
+  const bookTopRow = await Bookmarks
+    .findOne(
+      { categoryNo: parseInt(params.categoryNo) },
+      { _id: 1, sortNo: 1 })
+    .sort({ sortNo: -1 }).lean()
+  const sortNo = (bookTopRow && bookTopRow.sortNo) ? parseInt(bookTopRow.sortNo) + 1 : 1
+  params.bookmarkNo = bookmarkNo
+  params.sortNo = sortNo
   await Bookmarks.create(params)
-    .then(() => {
-      res.send('ok')
+    .then((result) => {
+      res.send(result._id);
     }).catch((err) => {
       console.error(err);
       res.send('error');
@@ -16,7 +29,7 @@ router.post('/bookmark/add', async (req, res) => {
 })
 
 router.get('/bookmarks', (req, res) => {
-  Bookmarks.find().sort({ sortNo: 1 })
+  Bookmarks.find().sort({ bookmarkNo: -1 })
     .then(data => res.send(data))
     .catch((err) => {
       console.error(err);
