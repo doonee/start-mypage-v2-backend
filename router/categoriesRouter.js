@@ -39,7 +39,7 @@ router.get('/categories', (req, res) => {
 })
 
 // 개인용
-router.get('/categories/my/:groupNo', (req, res) => {
+router.get('/my/categories/:groupNo', (req, res) => {
   Categories.find({ groupNo: req.params.groupNo }).sort({ sortNo: 1 }).lean()
     .then(data => res.send(data))
     .catch((err) => {
@@ -49,7 +49,7 @@ router.get('/categories/my/:groupNo', (req, res) => {
 })
 
 // 공개용
-router.get('/categories/open/:groupId', async (req, res) => {
+router.get('/open/categories/:groupId', async (req, res) => {
   try {
     const row = await Groups.findOne({ _id: req.params.groupId }).lean()
     const groupNo = (row && row.groupNo) ? row.groupNo : null
