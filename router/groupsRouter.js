@@ -57,13 +57,13 @@ router.get('/group/:id', (req, res) => {
 })
 
 router.put('/group/edit', (req, res) => {
-  const { _id, groupName, isImportant, isLinethrough, isPublic, memo } = req.body;
+  const { _id, groupName, isImportant, isLineThrough, isPublic, memo } = req.body;
   Groups.findOneAndUpdate({ _id }, {
     $set: {
       _id,
       groupName,
       isImportant,
-      isLinethrough,
+      isLineThrough,
       isPublic,
       memo
     }

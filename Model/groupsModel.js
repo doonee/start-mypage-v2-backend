@@ -7,7 +7,7 @@ const groupSchema = new mongoose.Schema(
     groupName: String,
     sortNo: Number,
     isImportant: Boolean,
-    isLinethrough: Boolean,
+    isLineThrough: Boolean,
     isPublic: Boolean,
     memo: String,
   },

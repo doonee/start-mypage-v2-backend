@@ -80,13 +80,17 @@ router.get('/bookmark/:id', (req, res) => {
 })
 
 router.put('/bookmark/edit', (req, res) => {
-  const { _id, categoryNo, bookmarkName, sortNo, isPublic } = req.body;
+  const { _id, groupNo, categoryNo, bookmarkName, sortNo,
+    isImportant, isLineThrough, memo } = req.body;
   Bookmarks.findOneAndUpdate({ _id }, {
     $set: {
+      groupNo,
       categoryNo,
       bookmarkName,
       sortNo,
-      isPublic
+      isImportant,
+      isLineThrough,
+      memo
     }
   }).then(() => {
     res.send('ok')
