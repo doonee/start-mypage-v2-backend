@@ -100,6 +100,8 @@ router.put('/bookmark/edit', (req, res) => {
   })
 })
 
+// 삭제: 현재 접속자와 북마크 등록자가 같은지 체크 후 삭제하는 로직 구성하기 
+// 같은 방식으로 수정, 삭제 모두 수정하기!
 router.delete('/bookmark/delete', (req, res) => {
   const { _id } = req.body;
   Bookmarks.deleteOne({ _id })
