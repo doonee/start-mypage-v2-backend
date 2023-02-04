@@ -100,6 +100,27 @@ router.put('/bookmark/edit', (req, res) => {
   })
 })
 
+router.put('/bookmark/edit/sort', async (req, res) => {
+  try {
+    const params = req.body;
+    const userId = 'abc' // 서버에서 추출
+    const queries = []
+    params.forEach((item) => {
+      queries.push({
+        updateOne: {
+          filter: { _id: item._id, userId: userId },
+          update: { sortNo: item.sortNo },
+        },
+      });
+    });
+    Bookmarks.bulkWrite(queries)
+    res.send('ok')
+  } catch (err) {
+    console.log(err)
+    res.send('error')
+  }
+})
+
 // 삭제: 현재 접속자와 북마크 등록자가 같은지 체크 후 삭제하는 로직 구성하기 
 // 같은 방식으로 수정, 삭제 모두 수정하기!
 router.delete('/bookmark/delete', (req, res) => {
