@@ -6,6 +6,8 @@ const { Bookmarks } = require('../Model/bookmarksModel');
 
 router.post('/category/add', async (req, res) => {
   const params = req.body;
+  // 프론트에서 넘어온 userId 를 userId 세션? 이나 로컬스토리지? 에서 대조 후 이상 없으면 진행
+  // 입력, 수정, 삭제 등 모두 적용 해야함.
   const topRow = await Categories
     .findOne(
       {},

@@ -6,6 +6,8 @@ const { Bookmarks } = require('../Model/bookmarksModel');
 
 router.post('/group/add', async (req, res) => {
   const params = req.body;
+  // 프론트에서 넘어온 userId 를 userId 세션? 이나 로컬스토리지? 에서 대조 후 이상 없으면 진행
+  // 입력, 수정, 삭제 등 모두 적용 해야함.
   const topRow = await Groups.findOne({}, { _id: -1, groupNo: 1 })
     .sort({ groupNo: -1 }).lean()
   const groupNo = (topRow && topRow.groupNo) ?
@@ -57,8 +59,10 @@ router.get('/group/:id', (req, res) => {
 })
 
 router.put('/group/edit', (req, res) => {
-  const { _id, groupName, isImportant, isLineThrough, isPublic, memo } = req.body;
-  Groups.findOneAndUpdate({ _id }, {
+  const { _id, userId, groupName, isImportant, isLineThrough, isPublic, memo } = req.body;
+  // 프론트에서 넘어온 userId 를 userId 세션? 이나 로컬스토리지? 에서 대조 후 이상 없으면 진행
+  // 입력, 수정, 삭제 등 모두 적용 해야함.
+  Groups.findOneAndUpdate({ _id, userId }, {
     $set: {
       _id,
       groupName,
