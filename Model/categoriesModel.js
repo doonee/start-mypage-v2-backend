@@ -9,6 +9,7 @@ const categorySchema = new mongoose.Schema(
     sortNo: Number,
     isImportant: Boolean,
     isLineThrough: Boolean,
+    isPublic: Boolean,
     memo: String
   },
   { timestamps: true, collection: "categories" }
