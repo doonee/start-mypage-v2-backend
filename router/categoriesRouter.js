@@ -91,7 +91,8 @@ router.get('/category/:_id', (req, res) => {
 })
 
 router.put('/category/edit', (req, res) => {
-  const { _id, groupNo, categoryName, sortNo, isImportant, isLineThrough, memo } = req.body;
+  const { _id, groupNo, categoryName, sortNo, isImportant,
+    isLineThrough, isPublic, memo } = req.body;
   Categories.findOneAndUpdate({ _id }, {
     $set: {
       groupNo,
@@ -99,6 +100,7 @@ router.put('/category/edit', (req, res) => {
       sortNo,
       isImportant,
       isLineThrough,
+      isPublic,
       memo
     }
   }).then(() => {
