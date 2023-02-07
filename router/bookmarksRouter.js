@@ -88,16 +88,15 @@ router.get('/open/group/bookmarks/:groupId', async (req, res) => {
 
 // 공개용
 router.get('/open/category/bookmarks/:categoryId', async (req, res) => {
-  console.log(req.params)
   try {
     const row = await Categories
       .findOne({ _id: req.params.categoryId }).lean()
-    const CategoryNo = (row && row.categoryNo) ?? null // 대소문자 구별 주의!!
-    if (!CategoryNo) {
+    const categoryNo = await (row?.categoryNo) ?? null // 대소문자 구별 주의!!
+    if (!categoryNo) {
       console.error('존재하지 않는 카테고리 아이디 입니다.')
       res.send('error')
     }
-    await Bookmarks.find({ CategoryNo }).sort({ sortNo: 1 }).lean()
+    await Bookmarks.find({ categoryNo }).sort({ sortNo: 1 }).lean()
       .then(data => res.send(data))
   } catch (err) {
     console.error(err)
