@@ -1,5 +1,6 @@
 var router = require('express').Router();
 const { startSession } = require('mongoose');
+const { Groups } = require('../Model/groupsModel');
 const { Categories } = require('../Model/categoriesModel');
 const { Bookmarks } = require('../Model/bookmarksModel');
 
@@ -39,7 +40,22 @@ router.get('/bookmarks', (req, res) => {
 })
 
 // 개인용
-router.get('/my/bookmarks/:categoryNo', (req, res) => {
+router.get('/my/group/bookmarks/:groupNo', (req, res) => {
+  if (!parseInt(req.params?.groupNo)) {
+    console.error('groupNo error')
+    res.send('error')
+  }
+  Bookmarks.find({ groupNo: parseInt(req.params.groupNo) })
+    .sort({ categoryNo: 1, sortNo: 1 }).lean()
+    .then(data => res.send(data))
+    .catch((err) => {
+      console.error(err);
+      res.send('error')
+    });
+})
+
+// 개인용
+router.get('/my/category/bookmarks/:categoryNo', (req, res) => {
   if (!parseInt(req.params.categoryNo)) {
     console.error('categoryNo error')
     res.send('error')
@@ -53,12 +69,32 @@ router.get('/my/bookmarks/:categoryNo', (req, res) => {
 })
 
 // 공개용
-router.get('/open/bookmarks/:categoryId', async (req, res) => {
+router.get('/open/group/bookmarks/:groupId', async (req, res) => {
   try {
-    const row = await Categories.findOne({ _id: parseInt(req.params.categoryId) }).lean()
+    const row = await Groups
+      .findOne({ _id: req.params.groupId }).lean()
+    const GroupNo = (row?.groupNo) ?? null // 대소문자 구별 주의!!
+    if (!GroupNo) {
+      console.error('존재하지 않는 그룹 아이디 입니다.')
+      res.send('error')
+    }
+    await Bookmarks.find({ GroupNo }).sort({ categoryNo: 1, sortNo: 1 }).lean()
+      .then(data => res.send(data))
+  } catch (err) {
+    console.error(err)
+    res.send('error')
+  }
+})
+
+// 공개용
+router.get('/open/category/bookmarks/:categoryId', async (req, res) => {
+  console.log(req.params)
+  try {
+    const row = await Categories
+      .findOne({ _id: req.params.categoryId }).lean()
     const CategoryNo = (row && row.categoryNo) ?? null // 대소문자 구별 주의!!
     if (!CategoryNo) {
-      console.error('카테고리 번호가 존재하지 않습니다.')
+      console.error('존재하지 않는 카테고리 아이디 입니다.')
       res.send('error')
     }
     await Bookmarks.find({ CategoryNo }).sort({ sortNo: 1 }).lean()

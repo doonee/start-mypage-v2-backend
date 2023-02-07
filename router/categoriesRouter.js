@@ -41,7 +41,7 @@ router.get('/categories', (req, res) => {
 })
 
 // 개인용
-router.get('/my/categories/:groupNo', (req, res) => {
+router.get('/my/group/categories/:groupNo', (req, res) => {
   if (!req.params || !req.params.groupNo) {
     console.error('그룹번호가 올바르지 않습니다.')
     res.send('error')
