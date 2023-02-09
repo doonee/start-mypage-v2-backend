@@ -39,6 +39,28 @@ router.get('/bookmarks', (req, res) => {
     });
 })
 
+router.get('/search/:keyword', async (req, res) => {
+  try {
+    const { keyword } = req.params;
+    const regex = (pattern) => new RegExp(`.*${pattern}.*`)
+    const keywordRegex = regex(keyword);
+    let result = [];
+    const groups = await Groups.find({ groupName: { $regex: keywordRegex } })
+      .sort({ groupNo: 1 }).lean()
+    const categories = await Categories.find({ categoryName: { $regex: keywordRegex } })
+      .sort({ groupNo: 1 }).lean()
+    const bookmarks = await Bookmarks.find({ bookmarkName: { $regex: keywordRegex } })
+      .sort({ groupNo: 1 }).lean()
+    await groups.map((g) => result.push(g))
+    await categories.map((c) => result.push(c))
+    await bookmarks.map((b) => result.push(b))
+    res.send(result)
+  } catch (err) {
+    console.error(err);
+    res.send('error')
+  }
+})
+
 // 개인용
 router.get('/my/group/bookmarks/:groupNo', (req, res) => {
   if (!parseInt(req.params?.groupNo)) {
