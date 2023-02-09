@@ -45,12 +45,18 @@ router.get('/search/:keyword', async (req, res) => {
     const regex = (pattern) => new RegExp(`.*${pattern}.*`)
     const keywordRegex = regex(keyword);
     let result = [];
-    const groups = await Groups.find({ groupName: { $regex: keywordRegex } })
-      .sort({ groupNo: 1 }).lean()
-    const categories = await Categories.find({ categoryName: { $regex: keywordRegex } })
-      .sort({ groupNo: 1 }).lean()
-    const bookmarks = await Bookmarks.find({ bookmarkName: { $regex: keywordRegex } })
-      .sort({ groupNo: 1 }).lean()
+    const groups = await Groups.find({
+      groupName: { $regex: keywordRegex },
+      userId: 'abc'
+    }).sort({ groupNo: 1 }).lean()
+    const categories = await Categories.find({
+      categoryName: { $regex: keywordRegex },
+      userId: 'abc'
+    }).sort({ groupNo: 1 }).lean()
+    const bookmarks = await Bookmarks.find({
+      bookmarkName: { $regex: keywordRegex },
+      userId: 'abc'
+    }).sort({ groupNo: 1 }).lean()
     await groups.map((g) => result.push(g))
     await categories.map((c) => result.push(c))
     await bookmarks.map((b) => result.push(b))
