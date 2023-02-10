@@ -41,7 +41,8 @@ router.get('/bookmarks', (req, res) => {
 
 router.get('/search/:keyword', async (req, res) => {
   try {
-    const { keyword } = req.params;
+    let { keyword } = req.params;
+    keyword = decodeURIComponent(keyword)
     const regex = (pattern) => new RegExp(`.*${pattern}.*`)
     const keywordRegex = regex(keyword);
     let result = [];
