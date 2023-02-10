@@ -104,10 +104,11 @@ router.get('/open/group/bookmarks/:groupId', async (req, res) => {
       .findOne({ _id: req.params.groupId, isPublic: true }).lean()
     const GroupNo = (row?.groupNo) ?? null // 대소문자 구별 주의!!
     if (!GroupNo) {
-      console.error('존재하지 않는 그룹 아이디 입니다.')
+      console.error('그룹이 존재하지 않거나 공개 상태가 아닙니다.')
       res.send('error')
     }
-    await Bookmarks.find({ GroupNo }).sort({ categoryNo: 1, sortNo: 1 }).lean()
+    await Bookmarks.find({ GroupNo, isPublic: true })
+      .sort({ categoryNo: 1, sortNo: 1 }).lean()
       .then(data => res.send(data))
   } catch (err) {
     console.error(err)
@@ -122,10 +123,11 @@ router.get('/open/category/bookmarks/:categoryId', async (req, res) => {
       .findOne({ _id: req.params.categoryId, isPublic: true }).lean()
     const categoryNo = await (row?.categoryNo) ?? null // 대소문자 구별 주의!!
     if (!categoryNo) {
-      console.error('존재하지 않는 카테고리 아이디 입니다.')
+      console.error('카테고리가 존재하지 않거나 공개 상태가 아닙니다.')
       res.send('error')
     }
-    await Bookmarks.find({ categoryNo }).sort({ sortNo: 1 }).lean()
+    await Bookmarks.find({ categoryNo, isPublic: true })
+      .sort({ sortNo: 1 }).lean()
       .then(data => res.send(data))
   } catch (err) {
     console.error(err)
