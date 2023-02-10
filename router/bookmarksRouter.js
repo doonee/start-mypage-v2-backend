@@ -101,7 +101,7 @@ router.get('/my/category/bookmarks/:categoryNo', (req, res) => {
 router.get('/open/group/bookmarks/:groupId', async (req, res) => {
   try {
     const row = await Groups
-      .findOne({ _id: req.params.groupId }).lean()
+      .findOne({ _id: req.params.groupId, isPublic: true }).lean()
     const GroupNo = (row?.groupNo) ?? null // 대소문자 구별 주의!!
     if (!GroupNo) {
       console.error('존재하지 않는 그룹 아이디 입니다.')
@@ -119,7 +119,7 @@ router.get('/open/group/bookmarks/:groupId', async (req, res) => {
 router.get('/open/category/bookmarks/:categoryId', async (req, res) => {
   try {
     const row = await Categories
-      .findOne({ _id: req.params.categoryId }).lean()
+      .findOne({ _id: req.params.categoryId, isPublic: true }).lean()
     const categoryNo = await (row?.categoryNo) ?? null // 대소문자 구별 주의!!
     if (!categoryNo) {
       console.error('존재하지 않는 카테고리 아이디 입니다.')
