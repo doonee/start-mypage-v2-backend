@@ -11,8 +11,7 @@ router.post('/board/add', async (req, res) => {
     .then(() => {
       res.send('ok')
     }).catch((err) => {
-      console.error(err);
-      res.send('error');
+      next(err);
     });
 })
 
@@ -20,8 +19,7 @@ router.get('/board', (req, res) => {
   Board.find().sort({ idx: -1 })
     .then(data => res.send(data))
     .catch((err) => {
-      console.error(err);
-      res.send('error')
+      next(err)
     });
 })
 
@@ -31,7 +29,7 @@ router.get('/board/:id', (req, res) => {
     .then(data => res.send(data))
     .catch(err => {
       console.error(err)
-      res.send('error')
+      next(err)
     })
 })
 
@@ -46,7 +44,7 @@ router.put('/board/edit', (req, res) => {
     res.send('ok')
   }).catch(err => {
     console.error(err)
-    res.send('error')
+    next(err)
   })
 })
 
@@ -57,8 +55,7 @@ router.delete('/board/delete', (req, res) => {
       res.send('ok')
     })
     .catch((err) => {
-      console.err(err)
-      res.send('error')
+      next(err)
     })
 })
 

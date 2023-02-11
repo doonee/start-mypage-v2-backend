@@ -25,8 +25,7 @@ router.post('/bookmark/add', async (req, res) => {
     .then((result) => {
       res.send(result._id);
     }).catch((err) => {
-      console.error(err);
-      res.send('error');
+      next(err);
     });
 })
 
@@ -34,8 +33,7 @@ router.get('/bookmarks', (req, res) => {
   Bookmarks.find().sort({ bookmarkNo: -1 })
     .then(data => res.send(data))
     .catch((err) => {
-      console.error(err);
-      res.send('error')
+      next(err)
     });
 })
 
@@ -63,8 +61,8 @@ router.get('/search/:keyword', async (req, res) => {
     await bookmarks.map((b) => result.push(b))
     res.send(result)
   } catch (err) {
-    console.error(err);
-    res.send('error')
+
+    next(err)
   }
 })
 
@@ -72,14 +70,13 @@ router.get('/search/:keyword', async (req, res) => {
 router.get('/my/group/bookmarks/:groupNo', (req, res) => {
   if (!parseInt(req.params?.groupNo)) {
     console.error('groupNo error')
-    res.send('error')
+    next(err)
   }
   Bookmarks.find({ groupNo: parseInt(req.params.groupNo) })
     .sort({ categoryNo: 1, sortNo: 1 }).lean()
     .then(data => res.send(data))
     .catch((err) => {
-      console.error(err);
-      res.send('error')
+      next(err)
     });
 })
 
@@ -87,13 +84,12 @@ router.get('/my/group/bookmarks/:groupNo', (req, res) => {
 router.get('/my/category/bookmarks/:categoryNo', (req, res) => {
   if (!parseInt(req.params.categoryNo)) {
     console.error('categoryNo error')
-    res.send('error')
+    next(err)
   }
   Bookmarks.find({ categoryNo: parseInt(req.params.categoryNo) }).sort({ sortNo: 1 }).lean()
     .then(data => res.send(data))
     .catch((err) => {
-      console.error(err);
-      res.send('error')
+      next(err)
     });
 })
 
@@ -105,14 +101,14 @@ router.get('/open/group/bookmarks/:groupId', async (req, res) => {
     const GroupNo = (row?.groupNo) ?? null // 대소문자 구별 주의!!
     if (!GroupNo) {
       console.error('그룹이 존재하지 않거나 공개 상태가 아닙니다.')
-      res.send('error')
+      next(err)
     }
     await Bookmarks.find({ GroupNo, isPublic: true })
       .sort({ categoryNo: 1, sortNo: 1 }).lean()
       .then(data => res.send(data))
   } catch (err) {
     console.error(err)
-    res.send('error')
+    next(err)
   }
 })
 
@@ -124,14 +120,14 @@ router.get('/open/category/bookmarks/:categoryId', async (req, res) => {
     const categoryNo = await (row?.categoryNo) ?? null // 대소문자 구별 주의!!
     if (!categoryNo) {
       console.error('카테고리가 존재하지 않거나 공개 상태가 아닙니다.')
-      res.send('error')
+      next(err)
     }
     await Bookmarks.find({ categoryNo, isPublic: true })
       .sort({ sortNo: 1 }).lean()
       .then(data => res.send(data))
   } catch (err) {
     console.error(err)
-    res.send('error')
+    next(err)
   }
 })
 
@@ -141,7 +137,7 @@ router.get('/bookmark/:id', (req, res) => {
     .then(data => res.send(data))
     .catch(err => {
       console.error(err)
-      res.send('error')
+      next(err)
     })
 })
 
@@ -162,7 +158,7 @@ router.put('/bookmark/edit', (req, res) => {
     res.send('ok')
   }).catch(err => {
     console.error(err)
-    res.send('error')
+    next(err)
   })
 })
 
@@ -183,7 +179,7 @@ router.put('/bookmark/edit/sort', async (req, res) => {
     res.send('ok')
   } catch (err) {
     console.log(err)
-    res.send('error')
+    next(err)
   }
 })
 
@@ -196,8 +192,7 @@ router.delete('/bookmark/delete', (req, res) => {
       res.send('ok')
     })
     .catch((err) => {
-      console.err(err)
-      res.send('error')
+      next(err)
     })
 })
 

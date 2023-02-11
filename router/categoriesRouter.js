@@ -26,8 +26,7 @@ router.post('/category/add', async (req, res) => {
     .then((result) => {
       res.send(result._id);
     }).catch((err) => {
-      console.error(err);
-      res.send('error');
+      next(err);
     });
 })
 
@@ -35,8 +34,7 @@ router.get('/categories', (req, res) => {
   Categories.find().sort({ categoryNo: -1 }).lean()
     .then(data => res.send(data))
     .catch((err) => {
-      console.error(err);
-      res.send('error')
+      next(err)
     });
 })
 
@@ -44,13 +42,12 @@ router.get('/categories', (req, res) => {
 router.get('/my/group/categories/:groupNo', (req, res) => {
   if (!req.params || !req.params.groupNo) {
     console.error('그룹번호가 올바르지 않습니다.')
-    res.send('error')
+    next(err)
   }
   Categories.find({ groupNo: req.params.groupNo }).sort({ sortNo: 1 }).lean()
     .then(data => res.send(data))
     .catch((err) => {
-      console.error(err)
-      res.send('error')
+      next(err)
     });
 })
 
@@ -61,13 +58,13 @@ router.get('/open/categories/:groupId', async (req, res) => {
     const groupNo = (row && row.groupNo) ? row.groupNo : null
     if (!groupNo) {
       console.error('그룹번호가 존재하지 않습니다.')
-      res.send('error')
+      next(err)
     }
     await Categories.find({ groupNo }).sort({ sortNo: 1 }).lean()
       .then(data => res.send(data))
   } catch (err) {
     console.error(err)
-    res.send('error')
+    next(err)
   }
 })
 
@@ -75,8 +72,7 @@ router.get('/categories/:userId', (req, res) => {
   Categories.find({ userId: req.params.userId }).sort({ sortNo: -1 })
     .then(data => res.send(data))
     .catch((err) => {
-      console.error(err);
-      res.send('error')
+      next(err)
     });
 })
 
@@ -86,7 +82,7 @@ router.get('/category/:_id', (req, res) => {
     .then(data => res.send(data))
     .catch(err => {
       console.error(err)
-      res.send('error')
+      next(err)
     })
 })
 
@@ -107,7 +103,7 @@ router.put('/category/edit', (req, res) => {
     res.send('ok')
   }).catch(err => {
     console.error(err)
-    res.send('error')
+    next(err)
   })
 })
 
@@ -128,7 +124,7 @@ router.put('/category/edit/sort', async (req, res) => {
     res.send('ok')
   } catch (err) {
     console.log(err)
-    res.send('error')
+    next(err)
   }
 })
 
@@ -146,8 +142,8 @@ router.delete('/category/delete', async (req, res) => {
   } catch (err) {
     await session.abortTransaction();
     session.endSession();
-    console.error(err);
-    res.send('error')
+
+    next(err)
   }
 })
 

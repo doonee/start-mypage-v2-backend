@@ -22,8 +22,7 @@ router.post('/group/add', async (req, res) => {
     .then(() => {
       res.send('ok')
     }).catch((err) => {
-      console.error(err);
-      res.send('error');
+      next(err);
     });
 })
 
@@ -31,18 +30,16 @@ router.get('/groups', (req, res) => {
   Groups.find().sort({ groupNo: -1 }).lean()
     .then(data => res.send(data))
     .catch((err) => {
-      console.error(err);
-      res.send('error')
+      next(err);
     });
 })
 
-router.get('/groups/:userId', (req, res) => {
+router.get('/groups/:userId', (req, res, next) => {
   // userId 는 현재 브라우저의 암호화 된 localStorage userId
   Groups.find({ userId: 'abc' }).sort({ sortNo: 1 }).lean()
     .then(data => res.send(data))
     .catch((err) => {
-      console.error(err);
-      res.send('error')
+      next(err)
     });
 })
 
@@ -54,7 +51,7 @@ router.get('/group/:id', (req, res) => {
     .then(data => res.send(data))
     .catch(err => {
       console.error(err)
-      res.send('error')
+      next(err)
     })
 })
 
@@ -75,7 +72,7 @@ router.put('/group/edit', (req, res) => {
     res.send('ok')
   }).catch(err => {
     console.error(err)
-    res.send('error')
+    next(err)
   })
 })
 
@@ -96,7 +93,7 @@ router.put('/group/edit/sort', async (req, res) => {
     res.send('ok')
   } catch (err) {
     console.log(err)
-    res.send('error')
+    next(err)
   }
 })
 
@@ -116,8 +113,8 @@ router.delete('/group/delete', async (req, res) => {
   } catch (err) {
     await session.abortTransaction();
     session.endSession();
-    console.error(err);
-    res.send('error')
+
+    next(err)
   }
 })
 

@@ -6,8 +6,7 @@ router.get('/app-config', (req, res) => {
   AppConfig.findOne()
     .then(data => res.send(data))
     .catch((err) => {
-      console.error(err);
-      res.send('error')
+      next(err)
     });
 })
 

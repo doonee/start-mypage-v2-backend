@@ -12,8 +12,7 @@ router.post('/user/add', async (req, res) => {
       res.send('ok')
     })
     .catch((err) => {
-      console.log(err);
-      res.send('error');
+      next(err);
     });
 })
 
@@ -23,8 +22,7 @@ router.get('/users', (req, res) => {
       res.send(data)
     })
     .catch((err) => {
-      console.log(err);
-      res.send('error')
+      next(err)
     });
 })
 
@@ -34,7 +32,7 @@ router.get('/user/:id', (req, res) => {
     .then(data => res.send(data))
     .catch(err => {
       console.error(err)
-      res.send('error')
+      next(err)
     })
 })
 
@@ -48,7 +46,7 @@ router.put('/user/edit', (req, res) => {
     res.send('ok')
   }).catch(err => {
     console.error(err)
-    res.send('error')
+    next(err)
   })
 })
 
@@ -59,8 +57,7 @@ router.delete('/user/delete', (req, res) => {
       res.send('ok')
     })
     .catch((err) => {
-      console.err(err)
-      res.send('error')
+      next(err)
     })
 })
 
