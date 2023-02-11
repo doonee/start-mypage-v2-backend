@@ -42,6 +42,13 @@ app.all('*', (req, res) => {
   res.status(404).send('none')
 })
 
+// 에러 체크: 반드시 4개 매개변수 모두 기재되어 있어야 함!
+// 노출 하지말고 에러 디비에 저장 및 이메일 알람등 활용
+app.use((err, req, res, next) => {
+  console.error(`[error middleware] ${err}`)
+  res.send('error')
+})
+
 // mongoose
 if (!process.env.MONGODB_URI) throw new Error('db connection error...')
 mongoose
