@@ -1,41 +1,30 @@
+require('dotenv').config() // 환경변수: 맨위에 위치하는 것이 좋다.
+
 const express = require('express')
 const app = express()
+const morgan = require('morgan')
 var cors = require('cors')
-require('dotenv').config()
 const port = process.env.REACT_APP_PORT
 
 app.use(cors())
 
-// // post로 보내는 값 받는 옵션
-// const { urlencoded } = require('express')
-// var bodyParser = require('body-parser')
+app.use(morgan('dev')) // dev(개발용), combined(배포용, 좀 더 자세함)
 
-// post로 보내는 값 받는 옵션
-app.use(express.urlencoded({ extended: true }));
+// data 받기 옵션, body-parser 사용할 필요 없음, 파일은 multer 사용.
+app.use(express.urlencoded({ extended: true })); // post로 보낸 form data를 받기 위함
 app.use(express.json()) // To parse the incoming requests with JSON payloads
-
-// // moment
-// const moment = require('moment')
-// moment.locale('ko')
-
-// // locals 설정
-// app.use((req, res, next) => {
-//   // moment : 클라이언트에서 별도의 설정 없이 moment 문법을 그대로 활용할 수 있다. 
-//   res.locals.moment = moment
-//   next()
-// })
 
 // mongoose
 const { mongoose } = require('mongoose');
 
 // routers
-app.use('/', require('./router/boardRouter'));
-app.use('/', require('./router/usersRouter'));
 app.use('/', require('./router/appconfigRouter'));
 app.use('/', require('./router/configsRouter'));
 app.use('/', require('./router/groupsRouter'));
 app.use('/', require('./router/categoriesRouter'));
 app.use('/', require('./router/bookmarksRouter'));
+app.use('/', require('./router/usersRouter'));
+app.use('/', require('./router/boardRouter'));
 
 // 404 Not Found : 라우트 가장 아래에 위치
 app.all('*', (req, res) => {

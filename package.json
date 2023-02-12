@@ -17,6 +17,7 @@
     "mongodb": "^4.13.0",
     "mongodb-legacy": "^4.0.1",
     "mongoose": "^6.8.4",
+    "morgan": "^1.10.0",
     "node-static": "^0.7.11"
   },
   "devDependencies": {
