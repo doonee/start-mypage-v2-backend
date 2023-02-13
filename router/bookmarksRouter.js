@@ -41,12 +41,11 @@ router.post('/bookmark/getTitle', async (req, res, next) => {
     if (html?.data) {
       const $ = cheerio.load(html.data);
       title = $("title")?.text() || '';
-      res.send(title);
-    } else {
-      next('html or html.data error : ' + html)
     }
+    res.send(title);
   } catch (error) {
     next(error);
+    res.send('');
   }
 })
 
