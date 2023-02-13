@@ -1,3 +1,5 @@
+const axios = require("axios");
+const cheerio = require("cheerio");
 var router = require('express').Router();
 const { startSession } = require('mongoose');
 const { Groups } = require('../Model/groupsModel');
@@ -27,6 +29,19 @@ router.post('/bookmark/add', async (req, res) => {
     }).catch((err) => {
       next(err);
     });
+})
+
+// 크롤링으로 웹사이트 정보 가져오기
+// 사용자 로그온 상태에서만 가능하게 제한두기!!
+router.post('/bookmark/getTitle', async (req, res, next) => {
+  try {
+    const html = await axios.post(req.body.uri);
+    const $ = cheerio.load(html.data);
+    var title = $("title").text();
+    res.send(title);
+  } catch (error) {
+    next(error);
+  }
 })
 
 router.get('/bookmarks', (req, res) => {
