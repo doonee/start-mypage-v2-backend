@@ -39,7 +39,10 @@ app.use((err, req, res, next) => {
 })
 
 // mongoose
-if (!process.env.MONGODB_URI) throw new Error('db connection error...')
+if (!process.env.MONGODB_URI) throw new Error('db connection uri error!')
+if (process.env.NODE_ENV !== 'production') {
+  mongoose.set('debug', true); // 개발모드 시 콘솔에서 쿼리 출력됨.
+}
 mongoose
   .set('strictQuery', true) // 없으면 경고 발생함!
   .connect(process.env.MONGODB_URI)

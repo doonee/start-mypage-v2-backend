@@ -2,8 +2,15 @@ const mongoose = require("mongoose");
 
 const groupSchema = new mongoose.Schema(
   {
-    userId: String,
-    groupNo: Number,
+    userId: {
+      type: String,
+      required: true,
+    },
+    groupNo: {
+      type: Number,
+      required: true,
+      unique: true,
+    },
     groupName: String,
     sortNo: Number,
     isImportant: Boolean,

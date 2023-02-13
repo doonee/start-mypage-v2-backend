@@ -2,8 +2,16 @@ const mongoose = require("mongoose");
 
 const configSchema = new mongoose.Schema(
   {
-    idx: Number,
-    userId: String,
+    idx: {
+      type: Number,
+      required: true,
+      unique: true,
+    },
+    userId: {
+      type: String,
+      required: true,
+      unique: true,
+    },
     startGroupIdx: Number,
     appTitle: String,
     theme: String,

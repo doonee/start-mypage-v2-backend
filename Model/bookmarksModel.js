@@ -2,10 +2,23 @@ const mongoose = require("mongoose");
 
 const bookmarkSchema = new mongoose.Schema(
   {
-    userId: String,
-    groupNo: Number,
-    categoryNo: Number,
-    bookmarkNo: Number,
+    userId: {
+      type: String,
+      required: true,
+    },
+    groupNo: {
+      type: Number,
+      required: true,
+    },
+    categoryNo: {
+      type: Number,
+      required: true,
+    },
+    bookmarkNo: {
+      type: Number,
+      required: true,
+      unique: true,
+    },
     bookmarkName: String,
     bookmarkUri: String,
     sortNo: Number,

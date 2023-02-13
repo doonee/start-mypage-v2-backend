@@ -2,9 +2,19 @@ const mongoose = require("mongoose");
 
 const categorySchema = new mongoose.Schema(
   {
-    userId: String,
-    groupNo: Number,
-    categoryNo: Number,
+    userId: {
+      type: String,
+      required: true,
+    },
+    groupNo: {
+      type: Number,
+      required: true,
+    },
+    categoryNo: {
+      type: Number,
+      required: true,
+      unique: true,
+    },
     categoryName: String,
     sortNo: Number,
     isImportant: Boolean,

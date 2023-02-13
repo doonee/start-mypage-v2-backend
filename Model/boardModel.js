@@ -2,7 +2,11 @@ const mongoose = require("mongoose");
 
 const boardSchema = new mongoose.Schema(
   {
-    idx: Number,
+    idx: {
+      type: Number,
+      required: true,
+      unique: true,
+    },
     title: String,
     content: String,
     writer: String,
