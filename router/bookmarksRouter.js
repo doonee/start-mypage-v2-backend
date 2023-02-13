@@ -34,11 +34,17 @@ router.post('/bookmark/add', async (req, res) => {
 // 크롤링으로 웹사이트 정보 가져오기
 // 사용자 로그온 상태에서만 가능하게 제한두기!!
 router.post('/bookmark/getTitle', async (req, res, next) => {
+  if (!req.body || !req.body.uri) return;
   try {
     const html = await axios.post(req.body.uri);
-    const $ = cheerio.load(html.data);
-    var title = $("title").text();
-    res.send(title);
+    let title = '';
+    if (html?.data) {
+      const $ = cheerio.load(html.data);
+      title = $("title")?.text() || '';
+      res.send(title);
+    } else {
+      next('html or html.data error : ' + html)
+    }
   } catch (error) {
     next(error);
   }
