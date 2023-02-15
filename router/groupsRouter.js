@@ -4,7 +4,7 @@ const { Groups } = require('../Model/groupsModel');
 const { Categories } = require('../Model/categoriesModel');
 const { Bookmarks } = require('../Model/bookmarksModel');
 
-router.post('/group/add', async (req, res) => {
+router.post('/group/add', async (req, res, next) => {
   const params = req.body;
   // 프론트에서 넘어온 userId 를 userId 세션? 이나 로컬스토리지? 에서 대조 후 이상 없으면 진행
   // 입력, 수정, 삭제 등 모두 적용 해야함.
@@ -26,7 +26,7 @@ router.post('/group/add', async (req, res) => {
     });
 })
 
-router.get('/groups', (req, res) => {
+router.get('/groups', (req, res, next) => {
   Groups.find().sort({ groupNo: -1 }).lean()
     .then(data => res.send(data))
     .catch((err) => {
@@ -43,7 +43,7 @@ router.get('/groups/:userId', (req, res, next) => {
     });
 })
 
-router.get('/group/:id', (req, res) => {
+router.get('/group/:id', (req, res, next) => {
   if (req.params && req.params._id === 'newGroup') res.send(null)
 
   const { id } = req.params;
@@ -55,7 +55,7 @@ router.get('/group/:id', (req, res) => {
     })
 })
 
-router.put('/group/edit', (req, res) => {
+router.put('/group/edit', (req, res, next) => {
   const { _id, userId, groupName, isImportant, isLineThrough, isPublic, memo } = req.body;
   // 프론트에서 넘어온 userId 를 userId 세션? 이나 로컬스토리지? 에서 대조 후 이상 없으면 진행
   // 입력, 수정, 삭제 등 모두 적용 해야함.
@@ -76,7 +76,7 @@ router.put('/group/edit', (req, res) => {
   })
 })
 
-router.put('/group/edit/sort', async (req, res) => {
+router.put('/group/edit/sort', async (req, res, next) => {
   try {
     const params = req.body;
     const userId = 'abc' // 서버에서 추출
@@ -97,7 +97,7 @@ router.put('/group/edit/sort', async (req, res) => {
   }
 })
 
-router.delete('/group/delete', async (req, res) => {
+router.delete('/group/delete', async (req, res, next) => {
   const { _id } = req.body;
   const session = await startSession();
   try {

@@ -6,7 +6,7 @@ const { Groups } = require('../Model/groupsModel');
 const { Categories } = require('../Model/categoriesModel');
 const { Bookmarks } = require('../Model/bookmarksModel');
 
-router.post('/bookmark/add', async (req, res) => {
+router.post('/bookmark/add', async (req, res, next) => {
   const params = req.body;
   const topRow = await Bookmarks
     .findOne(
@@ -43,13 +43,13 @@ router.post('/bookmark/getTitle', async (req, res, next) => {
       title = $("title")?.text() || '';
     }
     res.send(title);
-  } catch (error) {
-    next(error);
+  } catch (err) {
+    next(err);
     res.send('');
   }
 })
 
-router.get('/bookmarks', (req, res) => {
+router.get('/bookmarks', (req, res, next) => {
   Bookmarks.find().sort({ bookmarkNo: -1 })
     .then(data => res.send(data))
     .catch((err) => {
@@ -57,7 +57,7 @@ router.get('/bookmarks', (req, res) => {
     });
 })
 
-router.get('/search/:keyword', async (req, res) => {
+router.get('/search/:keyword', async (req, res, next) => {
   try {
     let { keyword } = req.params;
     keyword = decodeURIComponent(keyword)
@@ -87,7 +87,7 @@ router.get('/search/:keyword', async (req, res) => {
 })
 
 // 개인용
-router.get('/my/group/bookmarks/:groupNo', (req, res) => {
+router.get('/my/group/bookmarks/:groupNo', (req, res, next) => {
   if (!parseInt(req.params?.groupNo)) {
     console.error('groupNo error')
     next(err)
@@ -101,7 +101,7 @@ router.get('/my/group/bookmarks/:groupNo', (req, res) => {
 })
 
 // 개인용
-router.get('/my/category/bookmarks/:categoryNo', (req, res) => {
+router.get('/my/category/bookmarks/:categoryNo', (req, res, next) => {
   if (!parseInt(req.params.categoryNo)) {
     console.error('categoryNo error')
     next(err)
@@ -114,7 +114,7 @@ router.get('/my/category/bookmarks/:categoryNo', (req, res) => {
 })
 
 // 공개용
-router.get('/open/group/bookmarks/:groupId', async (req, res) => {
+router.get('/open/group/bookmarks/:groupId', async (req, res, next) => {
   try {
     const row = await Groups
       .findOne({ _id: req.params.groupId, isPublic: true }).lean()
@@ -133,7 +133,7 @@ router.get('/open/group/bookmarks/:groupId', async (req, res) => {
 })
 
 // 공개용
-router.get('/open/category/bookmarks/:categoryId', async (req, res) => {
+router.get('/open/category/bookmarks/:categoryId', async (req, res, next) => {
   try {
     const row = await Categories
       .findOne({ _id: req.params.categoryId, isPublic: true }).lean()
@@ -151,7 +151,7 @@ router.get('/open/category/bookmarks/:categoryId', async (req, res) => {
   }
 })
 
-router.get('/bookmark/:id', (req, res) => {
+router.get('/bookmark/:id', (req, res, next) => {
   const { id } = req.params;
   Bookmarks.findOne({ _id: id })
     .then(data => res.send(data))
@@ -161,7 +161,7 @@ router.get('/bookmark/:id', (req, res) => {
     })
 })
 
-router.put('/bookmark/edit', (req, res) => {
+router.put('/bookmark/edit', (req, res, next) => {
   const { _id, groupNo, categoryNo, bookmarkName, sortNo,
     isImportant, isLineThrough, memo } = req.body;
   Bookmarks.findOneAndUpdate({ _id }, {
@@ -182,7 +182,7 @@ router.put('/bookmark/edit', (req, res) => {
   })
 })
 
-router.put('/bookmark/edit/sort', async (req, res) => {
+router.put('/bookmark/edit/sort', async (req, res, next) => {
   try {
     const params = req.body;
     const userId = 'abc' // 서버에서 추출
@@ -205,7 +205,7 @@ router.put('/bookmark/edit/sort', async (req, res) => {
 
 // 삭제: 현재 접속자와 북마크 등록자가 같은지 체크 후 삭제하는 로직 구성하기 
 // 같은 방식으로 수정, 삭제 모두 수정하기!
-router.delete('/bookmark/delete', (req, res) => {
+router.delete('/bookmark/delete', (req, res, next) => {
   const { _id } = req.body;
   Bookmarks.deleteOne({ _id })
     .then(() => {

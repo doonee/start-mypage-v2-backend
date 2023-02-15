@@ -2,7 +2,7 @@ var router = require('express').Router();
 
 const { Board } = require('../Model/boardModel');
 
-router.post('/board/add', async (req, res) => {
+router.post('/board/add', async (req, res, next) => {
   const params = req.body;
   const topRow = await Board.findOne().sort({ idx: -1 })
   const idx = (topRow && topRow.idx) ? parseInt(topRow.idx) + 1 : 1
@@ -23,7 +23,7 @@ router.get('/board', (req, res) => {
     });
 })
 
-router.get('/board/:id', (req, res) => {
+router.get('/board/:id', (req, res, next) => {
   const { id } = req.params;
   Board.findOne({ _id: id })
     .then(data => res.send(data))
@@ -33,7 +33,7 @@ router.get('/board/:id', (req, res) => {
     })
 })
 
-router.put('/board/edit', (req, res) => {
+router.put('/board/edit', (req, res, next) => {
   const { id, title, content } = req.body;
   Board.findOneAndUpdate({ _id: id }, {
     $set: {
@@ -48,7 +48,7 @@ router.put('/board/edit', (req, res) => {
   })
 })
 
-router.delete('/board/delete', (req, res) => {
+router.delete('/board/delete', (req, res, next) => {
   const { id } = req.body;
   Board.deleteOne({ _id: id })
     .then(() => {

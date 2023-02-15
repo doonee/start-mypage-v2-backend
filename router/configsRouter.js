@@ -2,7 +2,7 @@ var router = require('express').Router();
 
 const { Configs } = require('../Model/configsModel');
 
-router.post('/config/add', async (req, res) => {
+router.post('/config/add', async (req, res, next) => {
   const params = req.body;
   const topRow = await Configs.findOne().sort({ idx: -1 })
   const idx = (topRow && topRow.idx) ? parseInt(topRow.idx) + 1 : 1
@@ -15,7 +15,7 @@ router.post('/config/add', async (req, res) => {
     });
 })
 
-router.get('/configs', (req, res) => {
+router.get('/configs', (req, res, next) => {
   Configs.find().sort({ idx: -1 })
     .then(data => res.send(data))
     .catch((err) => {
@@ -23,7 +23,7 @@ router.get('/configs', (req, res) => {
     });
 })
 
-router.get('/config/:userId', (req, res) => {
+router.get('/config/:userId', (req, res, next) => {
   const { userId } = req.params;
   Configs.findOne({ userId })
     .then(data => res.send(data))
@@ -33,7 +33,7 @@ router.get('/config/:userId', (req, res) => {
     })
 })
 
-router.put('/config/edit', (req, res) => {
+router.put('/config/edit', (req, res, next) => {
   const { userId, startGroupIdx, appTitle, theme, isTargetBlank, isBasicSort } = req.body;
   Configs.findOneAndUpdate({ userId }, {
     $set: {
@@ -51,7 +51,7 @@ router.put('/config/edit', (req, res) => {
   })
 })
 
-router.delete('/config/delete', (req, res) => {
+router.delete('/config/delete', (req, res, next) => {
   const { userId } = req.body;
   Configs.deleteMany({ userId })
     .then(() => {

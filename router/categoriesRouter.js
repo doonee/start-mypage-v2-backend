@@ -4,7 +4,7 @@ const { Groups } = require('../Model/groupsModel');
 const { Categories } = require('../Model/categoriesModel');
 const { Bookmarks } = require('../Model/bookmarksModel');
 
-router.post('/category/add', async (req, res) => {
+router.post('/category/add', async (req, res, next) => {
   const params = req.body;
   // 프론트에서 넘어온 userId 를 userId 세션? 이나 로컬스토리지? 에서 대조 후 이상 없으면 진행
   // 입력, 수정, 삭제 등 모두 적용 해야함.
@@ -30,7 +30,7 @@ router.post('/category/add', async (req, res) => {
     });
 })
 
-router.get('/categories', (req, res) => {
+router.get('/categories', (req, res, next) => {
   Categories.find().sort({ categoryNo: -1 }).lean()
     .then(data => res.send(data))
     .catch((err) => {
@@ -39,7 +39,7 @@ router.get('/categories', (req, res) => {
 })
 
 // 개인용
-router.get('/my/group/categories/:groupNo', (req, res) => {
+router.get('/my/group/categories/:groupNo', (req, res, next) => {
   if (!req.params || !req.params.groupNo) {
     console.error('그룹번호가 올바르지 않습니다.')
     next(err)
@@ -52,7 +52,7 @@ router.get('/my/group/categories/:groupNo', (req, res) => {
 })
 
 // 공개용
-router.get('/open/categories/:groupId', async (req, res) => {
+router.get('/open/categories/:groupId', async (req, res, next) => {
   try {
     const row = await Groups.findOne({ _id: req.params.groupId }).lean()
     const groupNo = (row && row.groupNo) ? row.groupNo : null
@@ -68,7 +68,7 @@ router.get('/open/categories/:groupId', async (req, res) => {
   }
 })
 
-router.get('/categories/:userId', (req, res) => {
+router.get('/categories/:userId', (req, res, next) => {
   Categories.find({ userId: req.params.userId }).sort({ sortNo: -1 })
     .then(data => res.send(data))
     .catch((err) => {
@@ -76,7 +76,7 @@ router.get('/categories/:userId', (req, res) => {
     });
 })
 
-router.get('/category/:_id', (req, res) => {
+router.get('/category/:_id', (req, res, next) => {
   const { _id } = req.params;
   Categories.findOne({ _id })
     .then(data => res.send(data))
@@ -86,7 +86,7 @@ router.get('/category/:_id', (req, res) => {
     })
 })
 
-router.put('/category/edit', (req, res) => {
+router.put('/category/edit', (req, res, next) => {
   const { _id, groupNo, categoryName, sortNo, isImportant,
     isLineThrough, isPublic, memo } = req.body;
   Categories.findOneAndUpdate({ _id }, {
@@ -107,7 +107,7 @@ router.put('/category/edit', (req, res) => {
   })
 })
 
-router.put('/category/edit/sort', async (req, res) => {
+router.put('/category/edit/sort', async (req, res, next) => {
   try {
     const params = req.body;
     const userId = 'abc' // 서버에서 추출
@@ -128,7 +128,7 @@ router.put('/category/edit/sort', async (req, res) => {
   }
 })
 
-router.delete('/category/delete', async (req, res) => {
+router.delete('/category/delete', async (req, res, next) => {
   const { _id } = req.body;
   const session = await startSession();
   try {
