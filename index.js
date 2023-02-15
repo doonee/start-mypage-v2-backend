@@ -1,4 +1,5 @@
-require('dotenv').config() // 환경변수 사용 선언: 맨위에 위치하는 것이 좋다.
+const dotenv = require('dotenv')
+dotenv.config() // 환경변수 사용 선언: 맨위에 위치하는 것이 좋다.
 
 const express = require('express')
 const app = express()
@@ -13,7 +14,7 @@ app.use(cors())
  * dev(개발용), combined(배포용, 좀 더 자세함)
  * 서버에 과부하를 유도할 수도 있기에 production 에서 사용 안할려면 분기문 처리한다.
  */
-if (process.env.NODE_ENV !== 'production') {
+if (process.env.NODE_ENV === 'dev') {
   app.use(morgan(process.env.MORGAN_MODE))
 }
 
@@ -56,7 +57,7 @@ app.use(async (err, req, res, next) => {
     data.fullMessage = err
     await Errors.create(data)
   } catch (err) {
-    console.log('[에러 저장실패] ' + err)
+    console.log(`[에러 저장실패] ${err}`)
   } finally {
     res.status(err.status || 500)
     res.send('error')
