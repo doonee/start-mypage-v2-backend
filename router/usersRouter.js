@@ -4,16 +4,21 @@ const bcrypt = require('bcrypt');
 
 router.post('/user/add', async (req, res, next) => {
   const params = req.body;
-  const { userId, password } = params;
+  const { userId, userPass } = params;
   const isExist = await Users.find({ userId });
   if (isExist?.length) {
     res.send('사용 중인 유저아이디 입니다.')
     return // return 안해주면 콘솔창에 에러메시지 출려됨!
   }
+  const hashedPassword = await bcrypt.hash(userPass, 12)
   const topRow = await Users.findOne().sort({ idx: -1 })
   const idx = (topRow?.idx) ? parseInt(topRow.idx) + 1 : 1
-  params.idx = idx;
-  await Users.create(params)
+  const data = {
+    userId,
+    userPass: hashedPassword,
+    idx
+  }
+  await Users.create(data)
     .then(() => {
       res.send('ok')
     })
