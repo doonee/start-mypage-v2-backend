@@ -1,9 +1,15 @@
 var router = require('express').Router();
-
 const { Users } = require('../Model/usersModel');
+const bcrypt = require('bcrypt');
 
 router.post('/user/add', async (req, res, next) => {
   const params = req.body;
+  const { userId, password } = params;
+  const isExist = await Users.find({ userId });
+  if (isExist?.length) {
+    res.send('사용 중인 유저아이디 입니다.')
+    return // return 안해주면 콘솔창에 에러메시지 출려됨!
+  }
   const topRow = await Users.findOne().sort({ idx: -1 })
   const idx = (topRow?.idx) ? parseInt(topRow.idx) + 1 : 1
   params.idx = idx;

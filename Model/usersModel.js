@@ -15,8 +15,7 @@ const userSchema = new mongoose.Schema(
     userPass: {
       type: String,
       required: true,
-    },
-    createdAt: Date
+    }
   },
   { timestamps: true, collection: "users" }
 );
