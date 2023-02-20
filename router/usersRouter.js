@@ -70,7 +70,7 @@ router.post('/user/signin', async (req, res, next) => {
       },
       process.env.JWT_SECRET,
       {
-        expiresIn: '15m', // 만료시간 15분
+        expiresIn: '1m', // 만료시간 1분
         issuer: 'startmypage.com',
       }
     );
