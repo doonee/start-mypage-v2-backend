@@ -1,8 +1,9 @@
 var router = require('express').Router();
 const { mongoose, startSession } = require('mongoose');
-const { Groups } = require('../Model/groupsModel');
-const { Categories } = require('../Model/categoriesModel');
-const { Bookmarks } = require('../Model/bookmarksModel');
+const { Groups } = require('../schemas/groupsSchema');
+const { Categories } = require('../schemas/categoriesSchema');
+const { Bookmarks } = require('../schemas/bookmarksSchema');
+const { verifyJWT } = require('../middlewares/verifyTokenMiddleware');
 
 router.post('/group/add', async (req, res, next) => {
   const params = req.body;
@@ -26,17 +27,19 @@ router.post('/group/add', async (req, res, next) => {
     });
 })
 
-router.get('/groups', (req, res, next) => {
-  Groups.find().sort({ groupNo: -1 }).lean()
+router.get('/groups/:count', (req, res, next) => {
+  console.log('req.cookies => ', req.cookies)
+  console.log('req.session => ', req.session)
+  console.log('res.locals.decoded => ', res.locals.decoded)
+  Groups.find().sort({ groupNo: -1 }).limit(req.params.count).lean().exec()
     .then(data => res.send(data))
     .catch((err) => {
       next(err);
     });
 })
 
-router.get('/groups/:userId', (req, res, next) => {
-  // userId 는 현재 브라우저의 암호화 된 localStorage userId
-  Groups.find({ userId: 'abc' }).sort({ sortNo: 1 }).lean()
+router.get('/myGroups', verifyJWT, (req, res, next) => {
+  Groups.find({ userId: req.user }).sort({ sortNo: 1 }).lean().exec()
     .then(data => res.send(data))
     .catch((err) => {
       next(err)

@@ -1,6 +1,6 @@
 var router = require('express').Router();
 
-const { AppConfig } = require('../Model/appconfigModel');
+const { AppConfig } = require('../schemas/appconfigSchema');
 
 router.get('/app-config', (req, res, next) => {
   AppConfig.findOne()

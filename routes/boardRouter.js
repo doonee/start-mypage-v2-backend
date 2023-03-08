@@ -1,6 +1,7 @@
 var router = require('express').Router();
+const { verifyJWT } = require('../middlewares/verifyTokenMiddleware');
 
-const { Board } = require('../Model/boardModel');
+const { Board } = require('../schemas/boardSchema');
 
 router.post('/board/add', async (req, res, next) => {
   const params = req.body;
@@ -15,8 +16,9 @@ router.post('/board/add', async (req, res, next) => {
     });
 })
 
-router.get('/board', (req, res) => {
-  Board.find().sort({ idx: -1 })
+router.get('/board/:count', verifyJWT, (req, res, next) => {
+  // verifyJWT(req, res, next)
+  Board.find().sort({ idx: -1 }).limit(req.params.count).lean().exec()
     .then(data => res.send(data))
     .catch((err) => {
       next(err)

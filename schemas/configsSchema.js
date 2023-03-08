@@ -7,7 +7,7 @@ const configSchema = new mongoose.Schema(
       required: true,
       unique: true,
     },
-    userId: {
+    user: {
       type: String,
       required: true,
       unique: true,

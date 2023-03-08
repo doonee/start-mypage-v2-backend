@@ -1,6 +1,7 @@
 var router = require('express').Router();
 
-const { Configs } = require('../Model/configsModel');
+const { verifyJWT } = require('../middlewares/verifyTokenMiddleware');
+const { Configs } = require('../schemas/configsSchema');
 
 router.post('/config/add', async (req, res, next) => {
   const params = req.body;
@@ -23,9 +24,12 @@ router.get('/configs', (req, res, next) => {
     });
 })
 
-router.get('/config/:userId', (req, res, next) => {
-  const { userId } = req.params;
-  Configs.findOne({ userId })
+router.get('/myConfig', verifyJWT, (req, res, next) => {
+  //const { userId } = req.params;
+  const user = req.user;
+  //const userId = 'abc';
+  console.log("🚀 ~ file: configsRouter.js:29 ~ router.get ~ user:", user)
+  Configs.findOne({ user })
     .then(data => res.send(data))
     .catch(err => {
       console.error(err)
