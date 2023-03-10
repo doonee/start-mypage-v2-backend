@@ -1,15 +1,10 @@
-// Cross Origin Resource Sharing
-// const whitelist = ['http://localhost:3000',
-//   'http://127.0.0.1:3000',
-//   'https://start-mypage-v2.vercel.app',
-//   'https://web-start-mypage-v2-sop272gldb39yr3.gksl2.cloudtype.app']
-
 const whitelist = process.env.API_WHITE_LIST
 const corsOptions = {
   origin: (origin, callback) => {
-    if (whitelist.indexOf(origin) !== -1 || !origin) {
+    // !origin은 '같은 도메인과 포트'로 추정.
+    if (!origin || whitelist.indexOf(origin) !== -1) { // allow
       callback(null, true)
-    } else {
+    } else { // not allow
       callback(new Error('Not allowed by CORS'))
     }
   },
